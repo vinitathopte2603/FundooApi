@@ -1,69 +1,144 @@
-﻿using FundooBusinessLayer.Interfaces;
-using FundooCommonLayer.Model;
-using FundooCommonLayer.UserRequestModel;
-using FundooRepositoryLayer.Interfaces;
-using FundooRepositoryLayer.Services;
+﻿//-----------------------------------------------------------------------
+// <copyright file="UserBL.cs" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace FundooBusinessLayer.Services
+{
 using System;
 using System.Collections.Generic;
 using System.Text;
+    using FundooBusinessLayer.Interfaces;
+    using FundooCommonLayer.Model;
+    using FundooCommonLayer.UserRequestModel;
+    using FundooRepositoryLayer.Interfaces;
+    using FundooRepositoryLayer.Services;
 
-namespace FundooBusinessLayer.Services
-{
+    /// <summary>
+    /// implementation of User interface of business layer
+    /// </summary>
+    /// <seealso cref="FundooBusinessLayer.Interfaces.IUserBL" />
     public class UserBL : IUserBL
     {
+        /// <summary>
+        /// field declaration
+        /// </summary>
         private readonly IUserRL _userRL;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserBL"/> class.
+        /// </summary>
+        /// <param name="userRL">The object declaration of user interface.</param>
         public UserBL(IUserRL userRL)
         {
             this._userRL = userRL;
         }
 
+        /// <summary>
+        /// Forgets the password.
+        /// </summary>
+        /// <param name="forgotPassword">The email address.</param>
+        /// <returns>
+        /// returns the user data
+        /// </returns>
+        /// <exception cref="Exception">returns the exception</exception>
         public ResponseModel ForgotPassword(ForgotPassword forgotPassword)
         {
-            var data = _userRL.ForgotPassword(forgotPassword);
-            if (data != null)
+            try
             {
-                return data;
+                var data = this._userRL.ForgotPassword(forgotPassword);
+                if (data != null)
+                {
+                    return data;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception e)
             {
-                return null;
+                throw new Exception(e.Message);
             }
         }
 
+        /// <summary>
+        /// Logins the specified login.
+        /// </summary>
+        /// <param name="login">The email and password.</param>
+        /// <returns>
+        /// returns the user data if login in successful
+        /// </returns>
         public ResponseModel Login(Login login)
         {
-            var data = _userRL.Login(login);
-            if (data != null)
+            try
             {
-                return data;
+                var data = this._userRL.Login(login);
+                if (data != null)
+                {
+                    return data;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception e)
             {
-                return null;
+                throw new Exception(e.Message);
             }
         }
 
+        /// <summary>
+        /// Registers the specified user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>
+        /// returns the data of user
+        /// </returns>
+        /// <exception cref="Exception">user is empty</exception>
         public UserDB Registration(UserDB user)
         {
+            try
+            {
                 if (user != null)
                 {
-                    return _userRL.Registration(user);
+                    return this._userRL.Registration(user);
                 }
-                else 
+                else
                 {
                     throw new Exception("user is empty");
                 }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
+        /// <summary>
+        /// Resets the password.
+        /// </summary>
+        /// <param name="resetPassword">The new password.</param>
+        /// <returns>
+        /// returns a true if password is changed else returns false
+        /// </returns>
         public bool ResetPassword(ResetPassword resetPassword)
         {
-            if (resetPassword.Id == 0 || resetPassword.password == null)
+            try
             {
-                return false;
+                if (resetPassword.Id == 0 || resetPassword.Password == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return this._userRL.ResetPassword(resetPassword);
+                }
             }
-            else
+            catch (Exception e)
             {
-                return _userRL.ResetPassword(resetPassword);
+                throw new Exception(e.Message);
             }
         }
     }

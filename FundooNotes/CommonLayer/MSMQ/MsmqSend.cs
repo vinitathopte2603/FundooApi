@@ -1,12 +1,22 @@
-﻿using Experimental.System.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="MsmqSend.cs" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
 namespace FundooCommonLayer.MSMQ
 {
+    using System;
+    using Experimental.System.Messaging;
+
+    /// <summary>
+    /// Use of Microsoft messaging queue
+    /// </summary>
     public class MsmqSend
     {
+        /// <summary>
+        /// sends the token to messaging queue
+        /// </summary>
+        /// <param name="token">The token.</param>
         public static void MsmqSendMethod(string token)
         {
             MessageQueue messageQueue;
@@ -26,6 +36,7 @@ namespace FundooCommonLayer.MSMQ
                     messageQueue = new MessageQueue(path);
                     messageQueue.Label = description;
                 }
+
                 Message message1 = new Message(message);
                 message1.Formatter = new BinaryMessageFormatter();
                 messageQueue.Send(message1);

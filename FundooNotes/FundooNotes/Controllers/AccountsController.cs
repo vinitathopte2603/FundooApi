@@ -1,4 +1,11 @@
-﻿using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="AccountsController.cs" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace FundooNotes.Controllers
+{
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -17,80 +24,137 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FundooNotes.Controllers
-{
-    [Route("api/[controller]")]
+    /// <summary>
+    /// controller class
+    /// </summary>
+  [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        /// <summary>
+        /// object declaration of mentioned interface
+        /// </summary>
         private readonly IUserBL _userBL;
+
+        /// <summary>
+        /// object declaration of mentioned interface
+        /// </summary>
         private IConfiguration _config;
+
+        /// <summary>
+        /// Initializes the new instance of the <see cref="AccountsController"/>class
+        /// </summary>
+        /// <param name="userBL">The userBL</param>
+        /// <param name="configuration">The configuration</param>
         public AccountsController(IUserBL userBL, IConfiguration configuration)
         {
             this._userBL = userBL;
-            _config = configuration;
+            this._config = configuration;
         }
+
+        /// <summary>
+        /// registration of a new user
+        /// </summary>
+        /// <param name="userDB">field of UserDB type</param>
+        /// <returns>return the specified action</returns>
         [HttpPost]
         [Route("registration")]
         public IActionResult Registration([FromBody]UserDB userDB)
         {
-            var result = _userBL.Registration(userDB);
-            if (result != null)
+            try
             {
-                return this.Ok(new { result = "successfully added" });
+                var result = this._userBL.Registration(userDB);
+                if (result != null)
+                {
+                    return this.Ok(new { result = "successfully added" });
+                }
+                else
+                {
+                    return this.BadRequest(new { result = "failed to add" });
+                }
             }
-            else
+            catch (Exception e)
             {
-                return this.BadRequest(new { result = "failed to add" });
+                throw new Exception(e.Message);
             }
         }
+
+        /// <summary>
+        /// Login of the existing user
+        /// </summary>
+        /// <param name="login">field of Login type</param>
+        /// <returns>returns user data if successful else returns null</returns>
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody]Login login)
         {
-            var result = _userBL.Login(login);
-            if (result != null)
+            try
             {
-                var status = true;
-                var message = "Login successful";
-                var token = GenerateJSONWebToken(result, "Login");
-                var token1 = token;
-                var data = result;
-                return this.Ok(new { status, message, data, token1 });
+                var result = this._userBL.Login(login);
+                if (result != null)
+                {
+                    var status = true;
+                    var message = "Login successful";
+                    var token = this.GenerateJSONWebToken(result, "Login");
+                    var token1 = token;
+                    var data = result;
+                    return this.Ok(new { status, message, data, token1 });
+                }
+                else
+                {
+                    var status = false;
+                    var message = "Login failed";
+                    return this.BadRequest(new { status, message });
+                }
             }
-            else
+            catch (Exception e)
             {
-                var status = false;
-                var message = "Login failed";
-                return this.BadRequest(new { status, message });
+                throw new Exception(e.Message);
             }
         }
 
+        /// <summary>
+        /// http post method for forget password
+        /// </summary>
+        /// <param name="forgotPassword">the email address</param>
+        /// <returns>returns the specified status</returns>
         [HttpPost]
         [Route("ForgotPassword")]
         public IActionResult ForgotPassword([FromBody] ForgotPassword forgotPassword)
         {
-            var result = _userBL.ForgotPassword(forgotPassword);
-            if (result != null)
+            try
             {
-                var status = true;
-                var message = "Email verified";
-                var token = GenerateJSONWebToken(result, "ForgotPassword");
-                MsmqSend.MsmqSendMethod(token);
-                string receivedToken = Receiver.ReceiveFromMsmq();
-               string mailStatus = SendEmail.SendMail(receivedToken, forgotPassword);
-                return this.Ok(new { status, message, mailStatus ,token});
+                var result = this._userBL.ForgotPassword(forgotPassword);
+                if (result != null)
+                {
+                    var status = true;
+                    var message = "Email verified";
+                    var token = this.GenerateJSONWebToken(result, "ForgotPassword");
+                    MsmqSend.MsmqSendMethod(token);
+                    string receivedToken = Receiver.ReceiveFromMsmq();
+                    string mailStatus = SendEmail.SendMail(receivedToken, forgotPassword);
+                    return this.Ok(new { status, message, mailStatus, token });
+                }
+                else
+                {
+                    var status = true;
+                    var message = "Email not verified ";
+                    return this.BadRequest(new { status, message });
+                }
             }
-            else
+            catch (Exception e)
             {
-                var status = true;
-                var message = "Email not verified ";
-                return this.BadRequest(new { status, message });
+                throw new Exception(e.Message);
             }
         }
 
-        [HttpPost]
+        /// <summary>
+        /// method to reset the password
+        /// </summary>
+        /// <param name="resetPassword">the new password</param>
+        /// <returns>returns the specified action</returns>
         [Authorize]
+        [HttpPost]
         [Route("ResetPassword")]
         public IActionResult ResetPassword([FromBody] ResetPassword resetPassword)
         {
@@ -104,40 +168,55 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "ForgotPassword")
                     {
                         resetPassword.Id = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        status = _userBL.ResetPassword(resetPassword);
+                        status = this._userBL.ResetPassword(resetPassword);
                         if (status)
                         {
                             status = true;
                             message = "Password successfully changed";
-                            return Ok(new { status, message });
+                            return this.Ok(new { status, message });
                         }
                     }
                 }
+
                 status = false;
                 message = "Invalid Token";
-                return NotFound(new { status, message });
+                return this.NotFound(new { status, message });
             }
             catch (Exception e)
             {
-                return BadRequest(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
+
+        /// <summary>
+        /// Token generation
+        /// </summary>
+        /// <param name="response">the field of type Response Model</param>
+        /// <param name="type">the token type</param>
+        /// <returns>returns the token</returns>
         private string GenerateJSONWebToken(ResponseModel response, string type)
         {
-            var sercurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(sercurityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[] {
-        new Claim("Id", response.Id.ToString()),
-        new Claim("Email", response.Email),
-        new Claim("TokenType", type)
-    };
-
-            var token =new JwtSecurityToken(_config["Jwt:Issuer"],
-                _config["Jwt:Issuer"],
-                 claims,
-        expires: DateTime.Now.AddMinutes(120),  
-        signingCredentials: credentials);
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            try
+            {
+                var sercurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["Jwt:Key"]));
+                var credentials = new SigningCredentials(sercurityKey, SecurityAlgorithms.HmacSha256);
+                var claims = new[]
+                {
+                new Claim("Id", response.Id.ToString()),
+                new Claim("Email", response.Email),
+                new Claim("TokenType", type)
+            };
+                var token = new JwtSecurityToken(this._config["Jwt:Issuer"],
+                    this._config["Jwt:Issuer"],
+                     claims,
+            expires: DateTime.Now.AddMinutes(120),
+            signingCredentials: credentials);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
     }
 }
