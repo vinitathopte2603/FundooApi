@@ -46,6 +46,18 @@ namespace FundooBusinessLayer.Services
             }
         }
 
+        public List<NotesModel> GetAllArchive(int userId)
+        {
+            if (userId != 0)
+            {
+                return this._notesRepository.GetAllArchive(userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public List<NotesModel> GetAllNotes(int userId)
         {
             if (userId != 0)
@@ -58,6 +70,31 @@ namespace FundooBusinessLayer.Services
             }
         }
 
+        public List<NotesModel> GetAllPin(int userId)
+        {
+            if (userId != 0)
+            {
+                return this._notesRepository.GetAllPin(userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<NotesModel> GetAllTrash(int userId)
+        {
+            if (userId != 0)
+            {
+                return _notesRepository.GetAllTrash(userId);
+            }
+            else
+            {
+                return null;
+            }
+           
+        }
+
         public NotesModel GetNote(int userId, int noteId)
         {
             if (userId != 0 && noteId != 0)
@@ -68,6 +105,42 @@ namespace FundooBusinessLayer.Services
             else
             {
                 return null;
+            }
+        }
+
+        public bool IsArchive(int userId, int noteId)
+        {
+            if (userId != 0 && noteId != 0)
+            {
+                return _notesRepository.IsArchive(userId, noteId);
+            }
+            else
+            {
+                return false; 
+            }
+        }
+
+        public bool IsPin(int userId, int noteId)
+        {
+            if (userId != 0 && noteId != 0)
+            {
+                return _notesRepository.IsPin(userId, noteId);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsTrash(int userId, int noteId)
+        {
+            if (userId != 0 && noteId != 0)
+            {
+                return _notesRepository.IsTrash(userId, noteId);
+            }
+            else
+            {
+                return false;
             }
         }
 

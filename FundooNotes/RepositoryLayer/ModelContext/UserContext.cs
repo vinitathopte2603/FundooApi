@@ -31,8 +31,9 @@ using Microsoft.EntityFrameworkCore;
         /// <value>
         /// The registration.
         /// </value>
-        public DbSet<UserDB> Registration { get; set; }
+        public DbSet<UserDB> Users { get; set; }
         public DbSet<NotesModel> Notes { get; set; }
+        public DbSet<LabelModel> Labels { get; set; }
 
         /// <summary>
         /// Override this method to further configure the model that was discovered by convention from the entity types

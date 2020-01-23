@@ -19,6 +19,27 @@ namespace FundooRepositoryLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("FundooCommonLayer.Model.LabelModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("IsCreated");
+
+                    b.Property<DateTime>("IsModified");
+
+                    b.Property<string>("Label");
+
+                    b.Property<int?>("NoteId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Labels");
+                });
+
             modelBuilder.Entity("FundooCommonLayer.Model.NotesModel", b =>
                 {
                     b.Property<int>("NotesID")
@@ -80,7 +101,7 @@ namespace FundooRepositoryLayer.Migrations
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
-                    b.ToTable("Registration");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

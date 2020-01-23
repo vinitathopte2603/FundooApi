@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundooRepositoryLayer.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20200116091104_RepositoryLayer")]
-    partial class RepositoryLayer
+    [Migration("20200122103419_labelTable")]
+    partial class labelTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,60 @@ namespace FundooRepositoryLayer.Migrations
                 .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("FundooCommonLayer.Model.LabelModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("IsCreated");
+
+                    b.Property<DateTime>("IsModified");
+
+                    b.Property<string>("Label");
+
+                    b.Property<int?>("NoteId");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Labels");
+                });
+
+            modelBuilder.Entity("FundooCommonLayer.Model.NotesModel", b =>
+                {
+                    b.Property<int>("NotesID")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Color");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int>("ID");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsArchive");
+
+                    b.Property<DateTime>("IsCreated");
+
+                    b.Property<DateTime>("IsModified");
+
+                    b.Property<bool>("IsPin");
+
+                    b.Property<bool>("IsTrash");
+
+                    b.Property<DateTime>("Reminder");
+
+                    b.Property<string>("Title");
+
+                    b.HasKey("NotesID");
+
+                    b.ToTable("Notes");
+                });
 
             modelBuilder.Entity("FundooCommonLayer.Model.UserDB", b =>
                 {
@@ -49,7 +103,7 @@ namespace FundooRepositoryLayer.Migrations
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
-                    b.ToTable("Registration");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

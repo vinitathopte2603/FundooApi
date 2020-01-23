@@ -14,7 +14,7 @@ using System.Text;
     /// <summary>
     /// properties if the user
     /// </summary>
-    [Table("Registration")]
+   
     public class UserDB
     {
         /// <summary>

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FundooRepositoryLayer.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20200121061207_notestable")]
-    partial class notestable
+    [Migration("20200122050218_updatedtables")]
+    partial class updatedtables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -82,7 +82,7 @@ namespace FundooRepositoryLayer.Migrations
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
-                    b.ToTable("Registration");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -90,6 +90,8 @@ using Microsoft.IdentityModel.Tokens;
             services.AddTransient<IUserBL, UserBL>();
             services.AddTransient<INotesBusiness, NotesBusiness>();
             services.AddTransient<INotesRepository, NotesRepository>();
+            services.AddTransient<ILabelsBusiness, LabelsBusiness>();
+            services.AddTransient<ILabelsRepository, LabelsRepository>();
 
         }
 

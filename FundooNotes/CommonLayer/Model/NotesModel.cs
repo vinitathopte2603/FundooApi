@@ -33,7 +33,7 @@ using System.Text;
         /// <value>
         /// The identifier.
         /// </value>
-        [ForeignKey("Registration")]
+        [ForeignKey("Users")]
         public int ID { get; set; }
 
         /// <summary>

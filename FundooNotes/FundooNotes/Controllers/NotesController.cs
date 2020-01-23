@@ -22,7 +22,7 @@ namespace FundooNotes.Controllers
         }
 
         [HttpPost]
-        [Route("AddNotes")]
+       // [Route("AddNotes")]
         public IActionResult AddNotes([FromBody] NotesModel notesModel)
         {
             try
@@ -47,7 +47,7 @@ namespace FundooNotes.Controllers
 
                 status = false;
                 message = "Note not created";
-                return this.NotFound(new { status, message });
+                return this.BadRequest(new { status, message });
             }
             catch (Exception e)
             {
@@ -56,7 +56,7 @@ namespace FundooNotes.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateNote")]
+        [Route("{id}")]
         public IActionResult UpdateNote([FromBody] NotesModel notesModel)
         {
             try
@@ -85,12 +85,12 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new { e.Message });
+                return this.NotFound(new { e.Message });
             }
         }
 
         [HttpDelete]
-        [Route("DeleteNote")]
+        [Route("Delete/{id}")]
         public IActionResult DeleteNote(int noteId)
         {
             try
@@ -119,12 +119,12 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new { e.Message });
+                return this.NotFound(new { e.Message });
             }
         }
 
         [HttpGet]
-        [Route("GetNote")]
+        [Route("{id}")]
         public IActionResult GetNote(int noteId)
         {
             try
@@ -153,12 +153,12 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.BadRequest(new { e.Message });
+                return this.NotFound(new { e.Message });
             }
         }
 
         [HttpGet]
-        [Route("GetAllNotes")]
+      //  [Route("GetAllNotes")]
         public IActionResult GetAllNotes()
         {
             try
@@ -187,8 +187,210 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
+                return this.NotFound(new { e.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllTrash")]
+        public IActionResult GetAllTrash()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        List<NotesModel> result = this._notesBusiness.GetAllTrash(userId);
+                        if (result != null)
+                        {
+                            status = true;
+                            message = "note";
+                            return this.Ok(new { status, message, result });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "trash is empty";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { e.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllPin")]
+        public IActionResult GetAllPin()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        List<NotesModel> result = this._notesBusiness.GetAllPin(userId);
+                        if (result != null)
+                        {
+                            status = true;
+                            message = "pinned notes";
+                            return this.Ok(new { status, message, result });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Note not available";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { e.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllArchive")]
+        public IActionResult GetAllArchive()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        List<NotesModel> result = this._notesBusiness.GetAllArchive(userId);
+                        if (result != null)
+                        {
+                            status = true;
+                            message = "Archived notes";
+                            return this.Ok(new { status, message, result });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Archive is empty";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { e.Message });
+            }
+        }
+
+        [HttpPut]
+        [Route("IsPin")]
+        public IActionResult IsPin(int noteId)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        bool result = this._notesBusiness.IsPin(userId, noteId);
+                        if (result)
+                        {
+                            status = true;
+                            message = "note pinned";
+                            return this.Ok(new { status, message });
+                        }
+                    }
+                }
+                status = true;
+                message = "note  unpinned";
+                return this.Ok(new { status, message });
+            }
+            catch (Exception e)
+            {
                 return this.BadRequest(new { e.Message });
             }
         }
+        [HttpPut]
+        [Route("IsArchive")]
+        public IActionResult IsArchive(int noteId)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        bool result = this._notesBusiness.IsArchive(userId, noteId);
+                        if (result)
+                        {
+                            status = true;
+                            message = "note archived";
+                            return this.Ok(new { status, message });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Note not available";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { e.Message });
+            }
+        }
+        [HttpPut]
+        [Route("Istrash")]
+        public IActionResult IsTrash(int noteId)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        bool result = this._notesBusiness.IsTrash(userId, noteId);
+                        if (result)
+                        {
+                            status = true;
+                            message = "note archived";
+                            return this.Ok(new { status, message });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Note not available";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.NotFound(new { e.Message });
+            }
+        }
+      
     }
 }

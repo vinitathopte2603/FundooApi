@@ -43,24 +43,31 @@ using System.Text;
         /// </returns>
         public ResponseModel ForgotPassword(ForgotPassword forgotPassword)
         {
-            var data = this._context.Registration.FirstOrDefault(user => user.Email == forgotPassword.Email);
-            if (data != null)
+            try
             {
-                var userdata = new ResponseModel()
+                var data = this._context.Users.FirstOrDefault(user => user.Email == forgotPassword.Email);
+                if (data != null)
                 {
-                    Id = data.Id,
-                    FirstName = data.FirstName,
-                    LastName = data.LastName,
-                    Email = data.Email,
-                    IsActive = data.IsActive,
-                    IsCreated = data.IsCreated,
-                    IsModified = data.IsModified
-                };
-                return userdata;
+                    var userdata = new ResponseModel()
+                    {
+                        Id = data.Id,
+                        FirstName = data.FirstName,
+                        LastName = data.LastName,
+                        Email = data.Email,
+                        IsActive = data.IsActive,
+                        IsCreated = data.IsCreated,
+                        IsModified = data.IsModified
+                    };
+                    return userdata;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception e)
             {
-                return null;
+                throw new Exception(e.Message);
             }
         }
 
@@ -73,25 +80,32 @@ using System.Text;
         /// </returns>
         public ResponseModel Login(Login login)
         {
-            login.Password = EncodeDecode.EncodePassword(login.Password);
-            var data = this._context.Registration.FirstOrDefault(user => user.Email == login.Email && user.Passwrod == login.Password);
-            if (data != null)
+            try
             {
-                var userdata = new ResponseModel()
+                login.Password = EncodeDecode.EncodePassword(login.Password);
+                var data = this._context.Users.FirstOrDefault(user => user.Email == login.Email && user.Passwrod == login.Password);
+                if (data != null)
                 {
-                    Id = data.Id,
-                    FirstName = data.FirstName,
-                    LastName = data.LastName,
-                    Email = data.Email,
-                    IsActive = data.IsActive,
-                    IsCreated = data.IsCreated,
-                    IsModified = data.IsModified
-                };
-                return userdata;
+                    var userdata = new ResponseModel()
+                    {
+                        Id = data.Id,
+                        FirstName = data.FirstName,
+                        LastName = data.LastName,
+                        Email = data.Email,
+                        IsActive = data.IsActive,
+                        IsCreated = data.IsCreated,
+                        IsModified = data.IsModified
+                    };
+                    return userdata;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else 
+            catch (Exception e)
             {
-                return null;
+                throw new Exception(e.Message);
             }
         }
 
@@ -104,12 +118,19 @@ using System.Text;
         /// </returns>
         public UserDB Registration(UserDB user)
         {
-            user.Passwrod = EncodeDecode.EncodePassword(user.Passwrod);
-            user.IsCreated = DateTime.Now;
-            user.IsModified = DateTime.Now;
-            this._context.Registration.Add(user);
-            this._context.SaveChanges();
-            return user;
+            try
+            {
+                user.Passwrod = EncodeDecode.EncodePassword(user.Passwrod);
+                user.IsCreated = DateTime.Now;
+                user.IsModified = DateTime.Now;
+                this._context.Users.Add(user);
+                this._context.SaveChanges();
+                return user;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         /// <summary>
@@ -124,13 +145,13 @@ using System.Text;
         {
             try
             {
-                UserDB data = this._context.Registration.FirstOrDefault(usr => usr.Id == resetPassword.Id);
+                UserDB data = this._context.Users.FirstOrDefault(usr => usr.Id == resetPassword.Id);
                 if (data != null)
                 {
                     resetPassword.Password = EncodeDecode.EncodePassword(resetPassword.Password);
                     data.Passwrod = resetPassword.Password;
                     data.IsModified = DateTime.Now;
-                    var user = this._context.Registration.Attach(data);
+                    var user = this._context.Users.Attach(data);
                     user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                     this._context.SaveChanges();
                     return true;

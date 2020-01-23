@@ -96,9 +96,8 @@ using Microsoft.IdentityModel.Tokens;
                     var status = true;
                     var message = "Login successful";
                     var token = this.GenerateJSONWebToken(result, "Login");
-                    var token1 = token;
                     var data = result;
-                    return this.Ok(new { status, message, data, token1 });
+                    return this.Ok(new { status, message, data, token });
                 }
                 else
                 {
@@ -130,10 +129,10 @@ using Microsoft.IdentityModel.Tokens;
                     var status = true;
                     var message = "Email verified";
                     var token = this.GenerateJSONWebToken(result, "ForgotPassword");
-                    MsmqSend.MsmqSendMethod(token);
-                    string receivedToken = Receiver.ReceiveFromMsmq();
-                    string mailStatus = SendEmail.SendMail(receivedToken, forgotPassword);
-                    return this.Ok(new { status, message, mailStatus, token });
+                    MsmqSend.MsmqSendMethod(token,forgotPassword.Email);
+                    //string receivedToken = Receiver.ReceiveFromMsmq();
+                    //string mailStatus = SendEmail.SendMail(receivedToken, forgotPassword);
+                    return this.Ok(new { status, message, token });
                 }
                 else
                 {
