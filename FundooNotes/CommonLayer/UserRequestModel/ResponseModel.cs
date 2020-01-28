@@ -86,4 +86,27 @@ using System.Text;
         /// </value>
         public DateTime IsModified { get; set; }
     }
+    public class NoteResponseModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime Reminder { get; set; }
+        public string Image { get; set; }
+        public bool IsArchive { get; set; }
+        public bool IsPin { get; set; }
+        public bool IsTrash { get; set; }
+        public string Color { get; set; }
+        public DateTime IsCreated { get; set; }
+        public DateTime IsModified { get; set; }
+        public List<LabelResponseModel> labels { get; set; }
+    }
+    public class LabelResponseModel
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+        public DateTime IsCreated { get; set; }
+        public DateTime IsModified { get; set; }
+
+    }
 }

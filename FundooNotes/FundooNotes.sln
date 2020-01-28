@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundooRepositoryLayer", "Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundooCommonLayer", "CommonLayer\FundooCommonLayer.csproj", "{0D0115AD-8440-491D-BFEE-197C0A02C3E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listener", "Listener\Listener.csproj", "{951069A8-78FF-4EEB-8A45-CA0782EE2666}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Listener", "Listener\Listener.csproj", "{951069A8-78FF-4EEB-8A45-CA0782EE2666}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTestFundooNotes", "XUnitTestFundooNotes\XUnitTestFundooNotes.csproj", "{2669668A-3686-4078-A661-B3C91D1E9BB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{951069A8-78FF-4EEB-8A45-CA0782EE2666}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{951069A8-78FF-4EEB-8A45-CA0782EE2666}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{951069A8-78FF-4EEB-8A45-CA0782EE2666}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2669668A-3686-4078-A661-B3C91D1E9BB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2669668A-3686-4078-A661-B3C91D1E9BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2669668A-3686-4078-A661-B3C91D1E9BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2669668A-3686-4078-A661-B3C91D1E9BB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

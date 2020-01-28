@@ -14,7 +14,6 @@ using System.Text;
     /// <summary>
     /// properties if the user
     /// </summary>
-   
     public class UserDB
     {
         /// <summary>

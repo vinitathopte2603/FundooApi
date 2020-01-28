@@ -1,29 +1,114 @@
-﻿using FundooCommonLayer.Model;
+﻿//-----------------------------------------------------------------------
+// <copyright file="NotesRepository.cs" author="Vinita Thopte" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace FundooRepositoryLayer.Services
+{
+    using FundooCommonLayer.Model;
+using FundooCommonLayer.UserRequestModel;
 using FundooRepositoryLayer.Interfaces;
 using FundooRepositoryLayer.ModelContext;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace FundooRepositoryLayer.Services
-{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="FundooRepositoryLayer.Interfaces.INotesRepository" />
     public class NotesRepository : INotesRepository
     {
+        /// <summary>
+        /// The user context
+        /// </summary>
         private UserContext _userContext;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotesRepository"/> class.
+        /// </summary>
+        /// <param name="userContext">The user context.</param>
         public NotesRepository(UserContext userContext)
         {
             this._userContext = userContext;
         }
-        public NotesModel AddNotes(NotesModel notesModel)
+
+        /// <summary>
+        /// Adds the notes.
+        /// </summary>
+        /// <param name="notesModel">The notes model.</param>
+        /// <param name="userId">user Id</param>
+        /// <returns>
+        /// returns the added note
+        /// </returns>
+        /// <exception cref="System.Exception">returns exception</exception>
+        public async Task<NoteResponseModel> AddNotes(NotesRequestModel notesModel, int userId)
         {
             try
             {
-                notesModel.IsCreated = DateTime.Now;
-                notesModel.IsModified = DateTime.Now;
-                this._userContext.Notes.Add(notesModel);
-                _userContext.SaveChanges();
-                return notesModel;
+                NotesModel model = new NotesModel()
+                {
+
+                    ID = userId,
+                    Title = notesModel.Title,
+                    Description = notesModel.Description,
+                    Reminder = notesModel.Reminder,
+                    IsCreated = DateTime.Now,
+                    IsModified =DateTime.Now,
+                    IsPin=notesModel.IsPin,
+                    IsArchive=notesModel.IsArchive
+                
+                };
+              
+                this._userContext.Notes.Add(model);
+                await _userContext.SaveChangesAsync();
+                if (notesModel != null && notesModel.labels.Count != 0)
+                {
+                    List<RequestNotesLabels> requestNotesLabels = notesModel.labels;
+                    foreach (RequestNotesLabels request in requestNotesLabels)
+                    {
+                        if (request.Id > 0)
+                        {
+                            var data = new LabelsNotes()
+                            {
+                                LabelId = request.Id,
+                                NoteId = model.ID
+
+                            };
+                            _userContext.labelsNotes.Add(data);
+                            await _userContext.SaveChangesAsync();
+                        }
+                    }
+                }
+                List<LabelResponseModel> labelResponseModels = _userContext.labelsNotes.Join(_userContext.Labels,
+                    label => label.LabelId,
+                    note => note.Id,
+                    (note, label) => new LabelResponseModel
+                    {
+                        Id = label.Id,
+                        Label = label.Label,
+                        IsCreated = label.IsCreated,
+                        IsModified = label.IsModified
+                    }).ToList() ;
+
+                NoteResponseModel noteResponse = new NoteResponseModel()
+                {
+                    Id = model.ID,
+                    Title = model.Title,
+                    Description = model.Description,
+                    Reminder = model.Reminder,
+                    IsCreated = model.IsCreated,
+                    IsModified = model.IsModified,
+                    IsPin = model.IsPin,
+                    IsArchive = model.IsArchive,
+                    Color = model.Color,
+                    Image = model.Image,
+                    labels = labelResponseModels
+                };
+                return noteResponse;
             }
             catch (Exception e)
             {
@@ -31,19 +116,43 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllNotes(int userId)
+        public List<NoteResponseModel> GetAllNotes(int userId)
         {
             try
             {
-                List<NotesModel> notes = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == false)).ToList();
-                if (notes.Count != 0)
+                List<NoteResponseModel> notes = _userContext.Notes.Where(linq => linq.ID == userId).Select(linq => new NoteResponseModel
                 {
+                    Id = linq.ID,
+                    Title = linq.Title,
+                    Description = linq.Description,
+                    Reminder = linq.Reminder,
+                    Image = linq.Image,
+                    IsArchive = linq.IsArchive,
+                    IsPin =linq.IsPin,
+                    IsTrash=linq.IsTrash,
+                    IsCreated=linq.IsCreated,
+                    IsModified=linq.IsModified
+                  }).ToList();
+                if (notes.Count != 0 && notes != null)
+                {
+                    foreach (NoteResponseModel noteResponse in notes)
+                    {
+                        List<LabelResponseModel> labelResponses = _userContext.labelsNotes.Where(note => note.Id == noteResponse.Id).Join(_userContext.Labels,
+                            label => label.LabelId,
+                            note => note.Id, 
+                            (label, note) => new LabelResponseModel
+                            {
+                                Id=label.LabelId,
+                                Label=note.Label,
+                                IsCreated=note.IsCreated,
+                                IsModified=note.IsModified
+                            }).ToList();
+                        noteResponse.labels = labelResponses;
+                    }
+                }
+               
                     return notes;
-                }
-                else
-                {
-                    return null;
-                }
+                
             }
             catch (Exception e)
             {
@@ -51,32 +160,50 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public NotesModel UpdateNotes(NotesModel notesModel)
+        public async Task<NoteResponseModel> UpdateNotes(NotesRequestModel notesModel,int noteId, int userId)
         {
             try
             {
-                NotesModel notes = _userContext.Notes.FirstOrDefault(linq => (linq.ID == notesModel.ID) && (linq.NotesID == notesModel.NotesID));
+                var notes = _userContext.Notes.FirstOrDefault(linq => linq.ID == userId && linq.NotesID == noteId);
+                NotesModel notesModel1 = new NotesModel();
                 if (notes != null)
                 {
                     notes.Title = notesModel.Title;
                     notes.Description = notesModel.Description;
                     notes.IsModified = DateTime.Now;
+                    notes.Reminder = DateTime.Now;
+                    notes.Color = notesModel.Colour;
+                    notes.Image = notesModel.Image;
                     var note = this._userContext.Notes.Attach(notes);
                     note.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                    this._userContext.SaveChanges();
-                    return notes;
+                    await this._userContext.SaveChangesAsync();
+                 
                 }
-                else
+                NoteResponseModel noteResponse = new NoteResponseModel()
                 {
-                    return null;
-                }
+                    Id = noteId,
+                    Title = notesModel1.Title,
+                    Description = notesModel1.Description,
+                    Reminder = notesModel1.Reminder,
+                    Image = notesModel1.Image,
+                    Color = notesModel1.Color,
+                    IsCreated = notesModel1.IsCreated,
+                    IsModified = notesModel1.IsModified,
+                    IsPin = notesModel1.IsPin,
+                    IsArchive = notesModel1.IsArchive,
+                    IsTrash = notesModel1.IsTrash
+                };
+
+               
+                    return noteResponse;
+                
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        public bool DeleteNote(int userId,int notesId)
+        public async Task<bool> DeleteNote(int userId,int notesId)
         {
             try
             {
@@ -86,7 +213,7 @@ namespace FundooRepositoryLayer.Services
                     if (note.IsTrash == true)
                     {
                         _userContext.Notes.Remove(note);
-                        this._userContext.SaveChanges();
+                        await this._userContext.SaveChangesAsync();
                         return true;
                     }
                     else
@@ -105,27 +232,45 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public NotesModel GetNote(int userId, int noteId)
+        public NoteResponseModel GetNote(int userId, int noteId)
         {
             try
             {
-                NotesModel notes = _userContext.Notes.FirstOrDefault(linq => (linq.ID == userId) && (linq.NotesID == noteId));
-                if (notes != null)
+                NotesModel notes = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.NotesID == noteId)).FirstOrDefault();
+                List<LabelResponseModel> labelResponses = _userContext.labelsNotes.Where(note => note.Id == noteId).Join(_userContext.Labels,
+                    label => label.LabelId,
+                    note => note.Id,
+                    (label, note) => new LabelResponseModel
+                    {
+                        Id = label.LabelId,
+                        Label = note.Label,
+                        IsCreated = note.IsCreated,
+                        IsModified = note.IsModified
+                    }).ToList();
+                NoteResponseModel noteResponse = _userContext.Notes.Where(c => (c.NotesID == noteId) && (c.ID == userId)).Select(c => new NoteResponseModel
                 {
-                    return notes;
-                }
-                else
-                {
-                    return null;
-                }
+                    Id = c.ID,
+                    Title = c.Title,
+                    Description = c.Description,
+                    Reminder = c.Reminder,
+                    Image = c.Image,
+                    IsArchive = c.IsArchive,
+                    IsTrash = c.IsTrash,
+                    IsPin = c.IsPin,
+                    IsCreated = c.IsCreated,
+                    IsModified = c.IsModified,
+                    labels = labelResponses
+                }).FirstOrDefault();
+                return noteResponse;
             }
-            catch(Exception e)
+           
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
 
-        public bool IsTrash(int UserId, int noteId)
+        public async Task<bool> IsTrash(int UserId, int noteId)
         {
             try
             {
@@ -138,7 +283,7 @@ namespace FundooRepositoryLayer.Services
                         notes.IsTrash = true;
                         var note = this._userContext.Notes.Attach(notes);
                         note.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                        this._userContext.SaveChanges();
+                        await this._userContext.SaveChangesAsync();
                         flag = true;
                     }
                     else
@@ -146,7 +291,7 @@ namespace FundooRepositoryLayer.Services
                         notes.IsTrash = false;
                         var note = this._userContext.Notes.Attach(notes);
                         note.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                        this._userContext.SaveChanges();
+                        await this._userContext.SaveChangesAsync();
                         flag = true;
                     }
 
@@ -159,11 +304,24 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllTrash(int userId)
+        public List<NoteResponseModel> GetAllTrash(int userId)
         {
             try
             {
-                List<NotesModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == true) && (linq.IsArchive == false) && (linq.IsPin == false)).ToList();
+                List<NoteResponseModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == true) && (linq.IsArchive == false) && (linq.IsPin == false)).Select
+                    (linq => new NoteResponseModel
+                    {
+                        Id = linq.ID,
+                        Title = linq.Title,
+                        Description = linq.Description,
+                        Reminder = linq.Reminder,
+                        Image = linq.Image,
+                        IsArchive = linq.IsArchive,
+                        IsPin = linq.IsPin,
+                        IsTrash = linq.IsTrash,
+                        IsCreated = linq.IsCreated,
+                        IsModified = linq.IsModified
+                    }).ToList();
                 if (notesModels.Count != 0)
                 {
                     return notesModels;
@@ -178,7 +336,7 @@ namespace FundooRepositoryLayer.Services
                 throw new Exception(e.Message);
             }
         }
-        public bool IsPin(int userId, int noteId)
+        public async Task<bool> IsPin(int userId, int noteId)
         {
             try
             {
@@ -191,7 +349,7 @@ namespace FundooRepositoryLayer.Services
                         notesModel.IsPin = true;
                         var user = this._userContext.Notes.Attach(notesModel);
                         user.State = Microsoft.EntityFrameworkCore.EntityState.Modified; ;
-                        _userContext.SaveChanges();
+                        await _userContext.SaveChangesAsync();
                         flag = true;
 
                     }
@@ -200,7 +358,7 @@ namespace FundooRepositoryLayer.Services
                         notesModel.IsPin = false;
                         var user = this._userContext.Notes.Attach(notesModel);
                         user.State = Microsoft.EntityFrameworkCore.EntityState.Modified; ;
-                        _userContext.SaveChanges();
+                        await _userContext.SaveChangesAsync();
                         flag = true;
                     }
                 }
@@ -212,7 +370,7 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public bool IsArchive(int userId, int noteId)
+        public async Task<bool> IsArchive(int userId, int noteId)
         {
             try
             {
@@ -225,7 +383,7 @@ namespace FundooRepositoryLayer.Services
                         notesModel.IsArchive = true;
                         var user = this._userContext.Notes.Attach(notesModel);
                         user.State = Microsoft.EntityFrameworkCore.EntityState.Modified; ;
-                        _userContext.SaveChanges();
+                        await _userContext.SaveChangesAsync();
                         flag = true;
 
                     }
@@ -234,7 +392,7 @@ namespace FundooRepositoryLayer.Services
                         notesModel.IsArchive = false;
                         var user = this._userContext.Notes.Attach(notesModel);
                         user.State = Microsoft.EntityFrameworkCore.EntityState.Modified; ;
-                        _userContext.SaveChanges();
+                        await _userContext.SaveChangesAsync();
                         flag = true;
                     }
                 }
@@ -246,11 +404,24 @@ namespace FundooRepositoryLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllPin(int userId)
+        public List<NoteResponseModel> GetAllPin(int userId)
         {
             try
             {
-                List<NotesModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == false) && (linq.IsPin == true)).ToList();
+                List<NoteResponseModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == false) && (linq.IsPin == true)).Select
+                    (linq => new NoteResponseModel
+                    {
+                        Id = linq.ID,
+                        Title = linq.Title,
+                        Description = linq.Description,
+                        Reminder = linq.Reminder,
+                        Image = linq.Image,
+                        IsArchive = linq.IsArchive,
+                        IsPin = linq.IsPin,
+                        IsTrash = linq.IsTrash,
+                        IsCreated = linq.IsCreated,
+                        IsModified = linq.IsModified
+                    }).ToList();
                 if (notesModels.Count != 0)
                 {
                     return notesModels;
@@ -265,11 +436,24 @@ namespace FundooRepositoryLayer.Services
                 throw new Exception(e.Message);
             }
         }
-        public List<NotesModel> GetAllArchive(int userId)
+        public List<NoteResponseModel> GetAllArchive(int userId)
         {
             try
             {
-                List<NotesModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == true) && (linq.IsPin == false)).ToList();
+                List<NoteResponseModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == true) && (linq.IsPin == false)).Select
+                (linq => new NoteResponseModel
+                {
+                    Id = linq.ID,
+                    Title = linq.Title,
+                    Description = linq.Description,
+                    Reminder = linq.Reminder,
+                    Image = linq.Image,
+                    IsArchive = linq.IsArchive,
+                    IsPin = linq.IsPin,
+                    IsTrash = linq.IsTrash,
+                    IsCreated = linq.IsCreated,
+                    IsModified = linq.IsModified
+                }).ToList();
                 if (notesModels.Count != 0)
                 {
                     return notesModels;
@@ -284,7 +468,7 @@ namespace FundooRepositoryLayer.Services
                 throw new Exception(e.Message);
             }
         }
-        public bool DeleteAllTrash(int userId)
+        public async Task<bool> DeleteAllTrash(int userId)
         {
             try
             {
@@ -292,12 +476,46 @@ namespace FundooRepositoryLayer.Services
                 if (notesModels.Count != 0)
                 {
                     _userContext.Notes.RemoveRange(notesModels);
-                    _userContext.SaveChanges();
+                    await _userContext.SaveChangesAsync();
                     return true;
                 }
                 else
                 {
                     return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public List<NoteResponseModel> GetNoteByLabelId(int labelId)
+        {
+            try
+            {
+                List<NoteResponseModel> noteResponses = _userContext.labelsNotes.Where(linq => linq.Id == labelId).Join(_userContext.Notes,
+                    label => label.NoteId,
+                    note => note.NotesID,
+                    (note, label) => new NoteResponseModel
+                    {
+                        Id = note.Id,
+                        Title = label.Title,
+                        Description = label.Description,
+                        Color = label.Color,
+                        Image = label.Image,
+                        IsPin = label.IsPin,
+                        IsArchive = label.IsArchive,
+                        IsCreated = label.IsCreated,
+                        IsModified = label.IsModified,
+                        IsTrash = label.IsTrash
+                    }).ToList();
+                if (noteResponses.Count != 0)
+                {
+                    return noteResponses;
+                }
+                else
+                {
+                    return null;
                 }
             }
             catch (Exception e)

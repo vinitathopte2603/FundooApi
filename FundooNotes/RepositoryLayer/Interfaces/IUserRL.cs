@@ -8,6 +8,7 @@ namespace FundooRepositoryLayer.Interfaces
 using System;
 using System.Collections.Generic;
 using System.Text;
+    using System.Threading.Tasks;
     using FundooCommonLayer.Model;
     using FundooCommonLayer.UserRequestModel;
 
@@ -21,7 +22,7 @@ using System.Text;
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns>returns the user data</returns>
-        UserDB Registration(UserDB user);
+        Task<ResponseModel> Registration(RegistrationRequestModel user);
 
         /// <summary>
         /// Logs in the specified user.
@@ -42,6 +43,6 @@ using System.Text;
         /// </summary>
         /// <param name="resetPassword">The reset password.</param>
         /// <returns>returns a true if password is successfully changed </returns>
-        bool ResetPassword(ResetPassword resetPassword);
+        Task<bool> ResetPassword(ResetPassword reset, int userId);
     }
 }

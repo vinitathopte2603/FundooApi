@@ -1,28 +1,52 @@
-﻿using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="LabelController.cs" author="Vinita Thopte" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace FundooNotes.Controllers
+{
+    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FundooBusinessLayer.Interfaces;
 using FundooCommonLayer.Model;
+using FundooCommonLayer.UserRequestModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundooNotes.Controllers
-{
+    /// <summary>
+    /// label controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LabelController : ControllerBase
     {
+        /// <summary>
+        /// The labels business
+        /// </summary>
         private ILabelsBusiness _labelsBusiness;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LabelController"/> class.
+        /// </summary>
+        /// <param name="labelsBusiness">The labels business.</param>
         public LabelController(ILabelsBusiness labelsBusiness)
         {
             this._labelsBusiness = labelsBusiness;
         }
+
+        /// <summary>
+        /// Adds the label.
+        /// </summary>
+        /// <param name="label">The label.</param>
+        /// <returns>returns specified action</returns>
         [HttpPost]
-        [Route("Addlabel")]
-        public IActionResult AddLabel([FromBody]string label)
+       // [Route("Addlabel")]
+        public IActionResult AddLabel([FromBody]LabelsRequestModel label)
         {
             try
             {
@@ -54,8 +78,12 @@ namespace FundooNotes.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets all labels.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("GetLabels")]
+       // [Route("GetLabels")]
         public IActionResult GetAllLabels()
         {
             try
@@ -79,16 +107,22 @@ namespace FundooNotes.Controllers
                 }
                 status = false;
                 message = "label not available";
-                return this.NotFound(new { status, message });
+                return this.NoContent();
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
+
+        /// <summary>
+        /// Deletes the label.
+        /// </summary>
+        /// <param name="labelId">The label identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpDelete]
-        [Route("Deletelabel")]
-        public IActionResult DeleteLabel(int labelId)
+        [Route("{labelId}")]
+        public async Task<IActionResult> DeleteLabel(int labelId)
         {
             try
             {
@@ -100,7 +134,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        var result = this._labelsBusiness.DeleteLabel(userId, labelId);
+                        var result = await this._labelsBusiness.DeleteLabel(userId, labelId);
                         if (result)
                         {
                             status = true;
@@ -116,12 +150,19 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
+
+        /// <summary>
+        /// Updates the label.
+        /// </summary>
+        /// <param name="labelId">The label identifier.</param>
+        /// <param name="label">The label.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPut]
-        [Route("updatelabel")]
-        public IActionResult UpdateLabel(int labelId, string label)
+        [Route("{labelId}")]
+        public IActionResult UpdateLabel(int labelId, LabelsRequestModel label)
         {
             try
             {
@@ -149,7 +190,7 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
     }

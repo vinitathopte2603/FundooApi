@@ -8,6 +8,7 @@ namespace FundooBusinessLayer.Services
 using System;
 using System.Collections.Generic;
 using System.Text;
+    using System.Threading.Tasks;
     using FundooBusinessLayer.Interfaces;
     using FundooCommonLayer.Model;
     using FundooCommonLayer.UserRequestModel;
@@ -97,13 +98,13 @@ using System.Text;
         /// returns the data of user
         /// </returns>
         /// <exception cref="Exception">user is empty</exception>
-        public UserDB Registration(UserDB user)
+        public async Task<ResponseModel> Registration(RegistrationRequestModel user)
         {
             try
             {
                 if (user != null)
                 {
-                    return this._userRL.Registration(user);
+                    return await this._userRL.Registration(user);
                 }
                 else
                 {
@@ -123,17 +124,17 @@ using System.Text;
         /// <returns>
         /// returns a true if password is changed else returns false
         /// </returns>
-        public bool ResetPassword(ResetPassword resetPassword)
+        public async Task<bool> ResetPassword(ResetPassword resetPassword, int userId)
         {
             try
             {
-                if (resetPassword.Id == 0 || resetPassword.Password == null)
+                if (userId == 0 || resetPassword.Password == null)
                 {
                     return false;
                 }
                 else
                 {
-                    return this._userRL.ResetPassword(resetPassword);
+                    return await this._userRL.ResetPassword(resetPassword, userId);
                 }
             }
             catch (Exception e)

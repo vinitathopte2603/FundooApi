@@ -1,8 +1,8 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Login.cs" company="Bridgelabz">
+// <copyright file="Login.cs" author="Vinita Thopte" company="Bridgelabz">
 //     Company copyright tag.
 // </copyright>
-//-------------------------------------------------------------------
+//-----------------------------------------------------------------------
 namespace FundooCommonLayer.UserRequestModel
 {
     using System;
@@ -56,14 +56,6 @@ using System.Text;
     /// </summary>
     public class ResetPassword
     {
-        /// <summary>
-        /// Gets or sets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public int Id { get; set; }
-
         /// <summary>
         /// Gets or sets the password.
         /// </summary>

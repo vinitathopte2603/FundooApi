@@ -1,29 +1,52 @@
-﻿using System;
+﻿//-----------------------------------------------------------------------
+// <copyright file="NotesController.cs" author="Vinita Thopte" company="Bridgelabz">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
+namespace FundooNotes.Controllers
+{
+    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FundooBusinessLayer.Interfaces;
 using FundooCommonLayer.Model;
+using FundooCommonLayer.UserRequestModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FundooNotes.Controllers
-{
+    /// <summary>
+    /// Notes Controller
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class NotesController : ControllerBase
     {
+        /// <summary>
+        /// The notes business
+        /// </summary>
         private INotesBusiness _notesBusiness;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotesController"/> class.
+        /// </summary>
+        /// <param name="notesBusiness">The notes business.</param>
         public NotesController(INotesBusiness notesBusiness)
         {
             this._notesBusiness = notesBusiness;
         }
 
+        /// <summary>
+        /// Adds the notes.
+        /// </summary>
+        /// <param name="notesModel">The notes model.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPost]
        // [Route("AddNotes")]
-        public IActionResult AddNotes([FromBody] NotesModel notesModel)
+        public IActionResult AddNotes([FromBody] NotesRequestModel notesModel)
         {
             try
             {
@@ -34,13 +57,13 @@ namespace FundooNotes.Controllers
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
-                        notesModel.ID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        notesModel = this._notesBusiness.AddNotes(notesModel);
-                        if (notesModel != null)
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        var data = this._notesBusiness.AddNotes(notesModel, userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "Note created";
-                            return this.Ok(new { status, message, notesModel });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
@@ -55,9 +78,15 @@ namespace FundooNotes.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates the note.
+        /// </summary>
+        /// <param name="notesModel1">The notes model1.</param>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPut]
-        [Route("{id}")]
-        public IActionResult UpdateNote([FromBody] NotesModel notesModel)
+        [Route("{noteId}")]
+        public async Task<IActionResult> UpdateNote([FromBody] NotesRequestModel notesModel1,int noteId)
         {
             try
             {
@@ -68,8 +97,8 @@ namespace FundooNotes.Controllers
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
-                        notesModel.ID = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        notesModel = this._notesBusiness.UpdateNotes(notesModel);
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        NoteResponseModel notesModel = await this._notesBusiness.UpdateNotes(notesModel1, noteId, userId);
                         if (notesModel != null)
                         {
                             status = true;
@@ -85,13 +114,18 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Deletes the note.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpDelete]
-        [Route("Delete/{id}")]
-        public IActionResult DeleteNote(int noteId)
+        [Route("{noteId}")]
+        public async Task<IActionResult> DeleteNote(int noteId)
         {
             try
             {
@@ -103,7 +137,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = this._notesBusiness.DeleteNote(userId, noteId);
+                        bool result = await this._notesBusiness.DeleteNote(userId, noteId);
                         if (result)
                         {
                             status = true;
@@ -119,12 +153,17 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Gets the note.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("{id}")]
+        [Route("{noteId}")]
         public IActionResult GetNote(int noteId)
         {
             try
@@ -137,7 +176,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        NotesModel result = this._notesBusiness.GetNote(userId, noteId);
+                        NoteResponseModel result = this._notesBusiness.GetNote(userId, noteId);
                         if (result!=null)
                         {
                             status = true;
@@ -153,10 +192,14 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Gets all notes.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
       //  [Route("GetAllNotes")]
         public IActionResult GetAllNotes()
@@ -171,7 +214,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NotesModel> result = this._notesBusiness.GetAllNotes(userId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetAllNotes(userId);
                         if (result != null)
                         {
                             status = true;
@@ -183,16 +226,20 @@ namespace FundooNotes.Controllers
 
                 status = false;
                 message = "Note not available";
-                return this.NotFound(new { status, message });
+                return this.NoContent();
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Gets all trash.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("GetAllTrash")]
+        [Route("AllTrash")]
         public IActionResult GetAllTrash()
         {
             try
@@ -205,7 +252,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NotesModel> result = this._notesBusiness.GetAllTrash(userId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetAllTrash(userId);
                         if (result != null)
                         {
                             status = true;
@@ -217,16 +264,20 @@ namespace FundooNotes.Controllers
 
                 status = false;
                 message = "trash is empty";
-                return this.NotFound(new { status, message });
+                return this.NoContent();
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Gets all pin.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("GetAllPin")]
+        [Route("AllPin")]
         public IActionResult GetAllPin()
         {
             try
@@ -239,7 +290,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NotesModel> result = this._notesBusiness.GetAllPin(userId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetAllPin(userId);
                         if (result != null)
                         {
                             status = true;
@@ -251,16 +302,20 @@ namespace FundooNotes.Controllers
 
                 status = false;
                 message = "Note not available";
-                return this.NotFound(new { status, message });
+                return this.NoContent();
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Gets all archive.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("GetAllArchive")]
+        [Route("AllArchive")]
         public IActionResult GetAllArchive()
         {
             try
@@ -273,7 +328,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NotesModel> result = this._notesBusiness.GetAllArchive(userId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetAllArchive(userId);
                         if (result != null)
                         {
                             status = true;
@@ -285,17 +340,22 @@ namespace FundooNotes.Controllers
 
                 status = false;
                 message = "Archive is empty";
-                return this.NotFound(new { status, message });
+                return this.NoContent();
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified note identifier is pin.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPut]
-        [Route("IsPin")]
-        public IActionResult IsPin(int noteId)
+        [Route("{noteId}/Pinned")]
+        public async Task<IActionResult> IsPin(int noteId)
         {
             try
             {
@@ -307,7 +367,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = this._notesBusiness.IsPin(userId, noteId);
+                        bool result = await this._notesBusiness.IsPin(userId, noteId);
                         if (result)
                         {
                             status = true;
@@ -325,9 +385,15 @@ namespace FundooNotes.Controllers
                 return this.BadRequest(new { e.Message });
             }
         }
+
+        /// <summary>
+        /// Determines whether the specified note identifier is archive.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPut]
-        [Route("IsArchive")]
-        public IActionResult IsArchive(int noteId)
+        [Route("{noteId}/Archived")]
+        public async Task<IActionResult> IsArchive(int noteId)
         {
             try
             {
@@ -339,7 +405,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = this._notesBusiness.IsArchive(userId, noteId);
+                        bool result = await this._notesBusiness.IsArchive(userId, noteId);
                         if (result)
                         {
                             status = true;
@@ -358,9 +424,15 @@ namespace FundooNotes.Controllers
                 return this.NotFound(new { e.Message });
             }
         }
+
+        /// <summary>
+        /// Determines whether the specified note identifier is trash.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns the result of specified action</returns>
         [HttpPut]
-        [Route("Istrash")]
-        public IActionResult IsTrash(int noteId)
+        [Route("{noteId}/trash")]
+        public async Task<IActionResult> IsTrash(int noteId)
         {
             try
             {
@@ -372,7 +444,7 @@ namespace FundooNotes.Controllers
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = this._notesBusiness.IsTrash(userId, noteId);
+                        bool result = await this._notesBusiness.IsTrash(userId, noteId);
                         if (result)
                         {
                             status = true;
@@ -388,7 +460,84 @@ namespace FundooNotes.Controllers
             }
             catch (Exception e)
             {
-                return this.NotFound(new { e.Message });
+                return this.BadRequest(new { e.Message });
+            }
+        }
+
+        /// <summary>
+        /// Deletes all trash.
+        /// </summary>
+        /// <returns>returns the result of specified action</returns>
+        [HttpDelete]
+        //[Route("EmptyTrash")]
+        public async Task<IActionResult> DeleteAllTrash()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        bool result = await this._notesBusiness.DeleteAllTrash(userId);
+                        if (result)
+                        {
+                            status = true;
+                            message = "Notes deleted";
+                            return this.Ok(new { status, message });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Trash Empty";
+                return this.NoContent();
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new { e.Message });
+            }
+        }
+
+        /// <summary>
+        /// Gets the note by label identifier.
+        /// </summary>
+        /// <param name="labelId">The label identifier.</param>
+        /// <returns>returns the result of specified action</returns>
+        [HttpGet]
+        [Route("labelId")]
+        public IActionResult GetNoteByLabelId(int labelId)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        List<NoteResponseModel> result = this._notesBusiness.GetNoteByLabelId(labelId);
+                        if (result != null)
+                        {
+                            status = true;
+                            message = "note";
+                            return this.Ok(new { status, message, result });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "Note not available";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new { e.Message });
             }
         }
       

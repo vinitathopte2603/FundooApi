@@ -31,13 +31,26 @@ namespace FundooRepositoryLayer.Migrations
 
                     b.Property<string>("Label");
 
-                    b.Property<int?>("NoteId");
-
                     b.Property<int>("UserId");
 
                     b.HasKey("Id");
 
                     b.ToTable("Labels");
+                });
+
+            modelBuilder.Entity("FundooCommonLayer.Model.LabelsNotes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LabelId");
+
+                    b.Property<int>("NoteId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("labelsNotes");
                 });
 
             modelBuilder.Entity("FundooCommonLayer.Model.NotesModel", b =>

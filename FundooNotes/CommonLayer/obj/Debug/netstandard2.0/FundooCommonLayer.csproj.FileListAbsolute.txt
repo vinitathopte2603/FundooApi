@@ -13,7 +13,6 @@ D:\FundooProject\FundooNotes\CommonLayer\bin\Debug\netstandard2.0\Cosmos.CRTComp
 D:\FundooProject\FundooNotes\CommonLayer\bin\Debug\netstandard2.0\FundooCommonLayer.deps.json
 D:\FundooProject\FundooNotes\CommonLayer\bin\Debug\netstandard2.0\FundooCommonLayer.dll
 D:\FundooProject\FundooNotes\CommonLayer\bin\Debug\netstandard2.0\FundooCommonLayer.pdb
-D:\FundooProject\FundooNotes\CommonLayer\obj\Debug\netstandard2.0\FundooCommonLayer.csprojAssemblyReference.cache
 D:\FundooProject\FundooNotes\CommonLayer\obj\Debug\netstandard2.0\FundooCommonLayer.AssemblyInfoInputs.cache
 D:\FundooProject\FundooNotes\CommonLayer\obj\Debug\netstandard2.0\FundooCommonLayer.AssemblyInfo.cs
 D:\FundooProject\FundooNotes\CommonLayer\obj\Debug\netstandard2.0\FundooCommonLayer.dll

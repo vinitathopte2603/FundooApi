@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+    using System.Threading.Tasks;
     using FundooCommonLayer.Model;
     using FundooCommonLayer.UserRequestModel;
     using FundooRepositoryLayer.Interfaces;
@@ -116,16 +117,36 @@ using System.Text;
         /// <returns>
         /// returns the user data
         /// </returns>
-        public UserDB Registration(UserDB user)
+        public async Task<ResponseModel> Registration(RegistrationRequestModel user)
         {
             try
             {
-                user.Passwrod = EncodeDecode.EncodePassword(user.Passwrod);
-                user.IsCreated = DateTime.Now;
-                user.IsModified = DateTime.Now;
-                this._context.Users.Add(user);
-                this._context.SaveChanges();
-                return user;
+                UserDB dB = new UserDB()
+                {
+                    FirstName = user.FirstName,
+                    LastName=user.LastName,
+                    Email=user.Email,
+                    Passwrod=user.Passwrod,
+                    Type=user.Type,
+                    IsActive=true,
+                    IsCreated=DateTime.Now,
+                    IsModified=DateTime.Now
+                };
+                _context.Users.Add(dB);
+                await _context.SaveChangesAsync();
+
+                ResponseModel responseModel = new ResponseModel()
+                {
+                    Id = dB.Id,
+                    FirstName = dB.FirstName,
+                    LastName = dB.LastName,
+                    Email = dB.Email,
+                    Type = dB.Type,
+                    IsActive = dB.IsActive,
+                    IsCreated = dB.IsCreated,
+                    IsModified = dB.IsModified
+                };
+                return responseModel;
             }
             catch (Exception e)
             {
@@ -141,19 +162,19 @@ using System.Text;
         /// returns a true if password is successfully changed
         /// </returns>
         /// <exception cref="Exception">returns the exception</exception>
-        public bool ResetPassword(ResetPassword resetPassword)
+        public async Task<bool> ResetPassword(ResetPassword reset, int userId)
         {
             try
             {
-                UserDB data = this._context.Users.FirstOrDefault(usr => usr.Id == resetPassword.Id);
+                UserDB data = this._context.Users.FirstOrDefault(usr => usr.Id == userId);
                 if (data != null)
                 {
-                    resetPassword.Password = EncodeDecode.EncodePassword(resetPassword.Password);
-                    data.Passwrod = resetPassword.Password;
+                    reset.Password = EncodeDecode.EncodePassword(reset.Password);
+                    data.Passwrod = reset.Password;
                     data.IsModified = DateTime.Now;
                     var user = this._context.Users.Attach(data);
                     user.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                    this._context.SaveChanges();
+                    await this._context.SaveChangesAsync();
                     return true;
                 }
 

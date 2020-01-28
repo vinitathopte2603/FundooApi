@@ -1,9 +1,11 @@
 ﻿using FundooBusinessLayer.Interfaces;
 using FundooCommonLayer.Model;
+using FundooCommonLayer.UserRequestModel;
 using FundooRepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FundooBusinessLayer.Services
 {
@@ -14,11 +16,12 @@ namespace FundooBusinessLayer.Services
         {
             this._labelsRepository = labelsRepository;
         }
-        public LabelModel AddLabel(string label, int userId)
+
+        public async Task<LabelResponseModel> AddLabel(LabelsRequestModel label, int userId)
         {
             if (label != null && userId != 0)
             {
-                return this._labelsRepository.AddLabel(label, userId);
+                return await this._labelsRepository.AddLabel(label, userId);
             }
             else
             {
@@ -26,11 +29,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public bool DeleteLabel(int userId, int labelId)
+        public async Task<bool> DeleteLabel(int userId, int labelId)
         {
             if (userId != 0 && labelId != 0)
             {
-                return this._labelsRepository.DeleteLabel(userId, labelId);
+                return await this._labelsRepository.DeleteLabel(userId, labelId);
             }
             else 
             {
@@ -38,7 +41,7 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<LabelModel> GetAllLabels(int userId)
+        public List<LabelResponseModel> GetAllLabels(int userId)
         {
             if (userId != 0)
             {
@@ -50,11 +53,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public LabelModel UpdateLabel(int userId, int labelId, string label)
+        public async Task<LabelResponseModel> UpdateLabel(int userId, int labelId, LabelsRequestModel label)
         {
             if (userId != 0 && labelId != 0 && label != null)
             {
-                return this._labelsRepository.UpdateLabel(userId, labelId, label);
+                return await this._labelsRepository.UpdateLabel(userId, labelId, label);
             }
             else
             {

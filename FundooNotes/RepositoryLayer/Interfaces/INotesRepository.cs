@@ -6,9 +6,11 @@
 namespace FundooRepositoryLayer.Interfaces
 {
     using FundooCommonLayer.Model;
-using System;
+    using FundooCommonLayer.UserRequestModel;
+    using System;
 using System.Collections.Generic;
 using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// method declaration
@@ -20,21 +22,21 @@ using System.Text;
         /// </summary>
         /// <param name="notesModel">The notes model.</param>
         /// <returns>returns the added note</returns>
-        NotesModel AddNotes(NotesModel notesModel);
+        Task<NoteResponseModel> AddNotes(NotesRequestModel notesModel, int userId);
 
         /// <summary>
         /// Gets all notes.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>returns the notes of specified ID</returns>
-        List<NotesModel> GetAllNotes(int userId);
+        List<NoteResponseModel> GetAllNotes(int userId);
 
         /// <summary>
         /// Updates the notes.
         /// </summary>
         /// <param name="notesModel">The notes model.</param>
         /// <returns>returns the updated notes</returns>
-        NotesModel UpdateNotes(NotesModel notesModel);
+        Task<NoteResponseModel> UpdateNotes(NotesRequestModel notesModel,int noteId, int userId);
 
         /// <summary>
         /// Deletes the note.
@@ -42,21 +44,74 @@ using System.Text;
         /// <param name="userId">The user identifier.</param>
         /// <param name="notesId">The notes identifier.</param>
         /// <returns>returns a true if note is deleted else returns false</returns>
-        bool DeleteNote(int userId, int notesId);
+        Task<bool> DeleteNote(int userId, int notesId);
 
         /// <summary>
         /// Gets the note.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
-        /// <returns></returns>
-        NotesModel GetNote(int userId, int noteId);
-        bool IsPin(int userId, int noteId);
-        bool IsArchive(int userId, int noteId);
-        bool IsTrash(int userId, int noteId);
-        List<NotesModel> GetAllTrash(int userId);
-        List<NotesModel> GetAllPin(int userId);
-        List<NotesModel> GetAllArchive(int userId);
+        /// <returns>returns a note</returns>
+        NoteResponseModel GetNote(int userId, int noteId);
+
+        /// <summary>
+        /// Determines whether the specified user identifier is pin.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns a boolean value</returns>
+        Task<bool> IsPin(int userId, int noteId);
+
+        /// <summary>
+        /// Determines whether the specified user identifier is archive.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns boolean value</returns>
+        Task<bool> IsArchive(int userId, int noteId);
+
+        /// <summary>
+        /// Determines whether the specified user identifier is trash.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="noteId">The note identifier.</param>
+        /// <returns>returns a boolean value</returns>
+        Task<bool> IsTrash(int userId, int noteId);
+
+        /// <summary>
+        /// Gets all trash.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returnd the notes in trash</returns>
+        List<NoteResponseModel> GetAllTrash(int userId);
+
+        /// <summary>
+        /// Gets all pin.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns the notes that are pinned</returns>
+        List<NoteResponseModel> GetAllPin(int userId);
+
+        /// <summary>
+        /// Gets all archive.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns all archived notes</returns>
+        List<NoteResponseModel> GetAllArchive(int userId);
+
+        /// <summary>
+        /// Deletes all trash.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns a boolean value</returns>
+        Task<bool> DeleteAllTrash(int userId);
+
+        /// <summary>
+        /// Gets the note by label identifier.
+        /// </summary>
+        /// <param name="labelId">The label identifier.</param>
+        /// <returns>returns list of notes</returns>
+        List<NoteResponseModel> GetNoteByLabelId(int labelId);
 
     }
 }

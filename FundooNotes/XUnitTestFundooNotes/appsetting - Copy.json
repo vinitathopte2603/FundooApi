@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+
+
+  },
+  "ConnectionStrings": {
+    "UserData": "Data Source=.;Initial Catalog=FundooDb;Integrated Security=True"
+  },
+  "Jwt": {
+    "Key": "ThisIsMySecretKey",
+    "Issuer": "Test.com"
+  },
+  "AllowedHosts": "*"
+}

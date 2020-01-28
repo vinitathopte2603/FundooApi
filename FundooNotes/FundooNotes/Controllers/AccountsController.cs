@@ -59,7 +59,7 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>return the specified action</returns>
         [HttpPost]
         [Route("registration")]
-        public IActionResult Registration([FromBody]UserDB userDB)
+        public IActionResult Registration([FromBody]RegistrationRequestModel userDB)
         {
             try
             {
@@ -108,7 +108,7 @@ using Microsoft.IdentityModel.Tokens;
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                return this.BadRequest(e.Message);
             }
         }
 
@@ -127,11 +127,9 @@ using Microsoft.IdentityModel.Tokens;
                 if (result != null)
                 {
                     var status = true;
-                    var message = "Email verified";
+                    var message = "mail sent to registered email";
                     var token = this.GenerateJSONWebToken(result, "ForgotPassword");
                     MsmqSend.MsmqSendMethod(token,forgotPassword.Email);
-                    //string receivedToken = Receiver.ReceiveFromMsmq();
-                    //string mailStatus = SendEmail.SendMail(receivedToken, forgotPassword);
                     return this.Ok(new { status, message, token });
                 }
                 else
@@ -155,7 +153,7 @@ using Microsoft.IdentityModel.Tokens;
         [Authorize]
         [HttpPost]
         [Route("ResetPassword")]
-        public IActionResult ResetPassword([FromBody] ResetPassword resetPassword)
+        public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
         {
             try
             {
@@ -166,8 +164,8 @@ using Microsoft.IdentityModel.Tokens;
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "ForgotPassword")
                     {
-                        resetPassword.Id = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        status = this._userBL.ResetPassword(resetPassword);
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        status = await this._userBL.ResetPassword(resetPassword, userId);
                         if (status)
                         {
                             status = true;
@@ -195,6 +193,7 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>returns the token</returns>
         private string GenerateJSONWebToken(ResponseModel response, string type)
         {
+           
             try
             {
                 var sercurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._config["Jwt:Key"]));

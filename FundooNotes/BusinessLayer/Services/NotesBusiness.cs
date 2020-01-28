@@ -1,9 +1,11 @@
 ﻿using FundooBusinessLayer.Interfaces;
 using FundooCommonLayer.Model;
+using FundooCommonLayer.UserRequestModel;
 using FundooRepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FundooBusinessLayer.Services
 {
@@ -14,13 +16,13 @@ namespace FundooBusinessLayer.Services
         {
             this._notesRepository = notesRepository;
         }
-        public NotesModel AddNotes(NotesModel notesModel)
+        public async Task<NoteResponseModel> AddNotes(NotesRequestModel notesModel, int userId)
         {
             try
             {
-                if (notesModel != null)
+                if (notesModel != null && userId != 0)
                 {
-                    return this._notesRepository.AddNotes(notesModel);
+                    return await this._notesRepository.AddNotes(notesModel, userId);
                 }
                 else
                 {
@@ -33,12 +35,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public bool DeleteNote(int userId, int notesId)
+        public async Task<bool> DeleteAllTrash(int userId)
         {
-            if (userId != 0 && notesId != 0)
+            if (userId != 0)
             {
-
-                return _notesRepository.DeleteNote(userId, notesId);
+                return await this._notesRepository.DeleteAllTrash(userId);
             }
             else
             {
@@ -46,7 +47,20 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllArchive(int userId)
+        public async Task<bool> DeleteNote(int userId, int notesId)
+        {
+            if (userId != 0 && notesId != 0)
+            {
+
+                return await _notesRepository.DeleteNote(userId, notesId);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public List<NoteResponseModel> GetAllArchive(int userId)
         {
             if (userId != 0)
             {
@@ -58,7 +72,7 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllNotes(int userId)
+        public List<NoteResponseModel> GetAllNotes(int userId)
         {
             if (userId != 0)
             {
@@ -70,7 +84,7 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllPin(int userId)
+        public List<NoteResponseModel> GetAllPin(int userId)
         {
             if (userId != 0)
             {
@@ -82,7 +96,7 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<NotesModel> GetAllTrash(int userId)
+        public List<NoteResponseModel> GetAllTrash(int userId)
         {
             if (userId != 0)
             {
@@ -95,7 +109,7 @@ namespace FundooBusinessLayer.Services
            
         }
 
-        public NotesModel GetNote(int userId, int noteId)
+        public NoteResponseModel GetNote(int userId, int noteId)
         {
             if (userId != 0 && noteId != 0)
             {
@@ -108,11 +122,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public bool IsArchive(int userId, int noteId)
+        public async Task<bool> IsArchive(int userId, int noteId)
         {
             if (userId != 0 && noteId != 0)
             {
-                return _notesRepository.IsArchive(userId, noteId);
+                return await _notesRepository.IsArchive(userId, noteId);
             }
             else
             {
@@ -120,11 +134,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public bool IsPin(int userId, int noteId)
+        public async Task<bool> IsPin(int userId, int noteId)
         {
             if (userId != 0 && noteId != 0)
             {
-                return _notesRepository.IsPin(userId, noteId);
+                return await _notesRepository.IsPin(userId, noteId);
             }
             else
             {
@@ -132,11 +146,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public bool IsTrash(int userId, int noteId)
+        public async Task<bool> IsTrash(int userId, int noteId)
         {
             if (userId != 0 && noteId != 0)
             {
-                return _notesRepository.IsTrash(userId, noteId);
+                return await _notesRepository.IsTrash(userId, noteId);
             }
             else
             {
@@ -144,11 +158,22 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public NotesModel UpdateNotes(NotesModel notesModel)
+        public async Task<NoteResponseModel> UpdateNotes(NotesRequestModel notesModel,int noteId, int userId)
         {
             if (notesModel != null)
             {
-                return _notesRepository.UpdateNotes(notesModel);
+                return await _notesRepository.UpdateNotes(notesModel, noteId, userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public List<NoteResponseModel> GetNoteByLabelId(int labelId)
+        {
+            if (labelId != 0)
+            {
+                return this._notesRepository.GetNoteByLabelId(labelId);
             }
             else
             {
