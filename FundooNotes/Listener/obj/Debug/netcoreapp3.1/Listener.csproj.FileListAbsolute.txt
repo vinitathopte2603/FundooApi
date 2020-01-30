@@ -1,5 +1,4 @@
 D:\FundooProject\FundooNotes\Listener\bin\Debug\netcoreapp3.1\Listener.exe
-D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.csprojAssemblyReference.cache
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.AssemblyInfoInputs.cache
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.AssemblyInfo.cs
 D:\FundooProject\FundooNotes\Listener\bin\Debug\netcoreapp3.1\Listener.deps.json
@@ -11,3 +10,4 @@ D:\FundooProject\FundooNotes\Listener\bin\Debug\netcoreapp3.1\Experimental.Syste
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.csproj.CopyComplete
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.dll
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.pdb
+D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.csprojAssemblyReference.cache

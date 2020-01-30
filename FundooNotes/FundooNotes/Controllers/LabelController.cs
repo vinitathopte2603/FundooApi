@@ -178,7 +178,7 @@ using Microsoft.AspNetCore.Mvc;
                         if (data != null)
                         {
                             status = true;
-                            message = "label deleted";
+                            message = "label updated";
                             return this.Ok(new { status, message, data });
 
                         }

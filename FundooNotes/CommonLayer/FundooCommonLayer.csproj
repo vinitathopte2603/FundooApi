@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.10.0" />
     <PackageReference Include="Experimental.System.Messaging" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.9.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />

@@ -39,7 +39,7 @@ using System.Text;
         /// <value>
         /// The reminder.
         /// </value>
-        public DateTime Reminder { get; set; }
+        public DateTime? Reminder { get; set; }
 
         /// <summary>
         /// Gets or sets the image.

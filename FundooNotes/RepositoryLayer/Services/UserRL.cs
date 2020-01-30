@@ -121,6 +121,7 @@ using System.Text;
         {
             try
             {
+                user.Passwrod = EncodeDecode.EncodePassword(user.Passwrod);
                 UserDB dB = new UserDB()
                 {
                     FirstName = user.FirstName,

@@ -122,11 +122,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public async Task<bool> IsArchive(int userId, int noteId)
+        public async Task<bool> IsArchive(int userId, int noteId, TrashArchivePin archive)
         {
             if (userId != 0 && noteId != 0)
             {
-                return await _notesRepository.IsArchive(userId, noteId);
+                return await _notesRepository.IsArchive(userId, noteId, archive);
             }
             else
             {
@@ -134,11 +134,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public async Task<bool> IsPin(int userId, int noteId)
+        public async Task<bool> IsPin(int userId, int noteId, TrashArchivePin pin)
         {
             if (userId != 0 && noteId != 0)
             {
-                return await _notesRepository.IsPin(userId, noteId);
+                return await _notesRepository.IsPin(userId, noteId, pin);
             }
             else
             {
@@ -146,11 +146,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public async Task<bool> IsTrash(int userId, int noteId)
+        public async Task<bool> IsTrash(int userId, int noteId, TrashArchivePin trash)
         {
             if (userId != 0 && noteId != 0)
             {
-                return await _notesRepository.IsTrash(userId, noteId);
+                return await _notesRepository.IsTrash(userId, noteId, trash);
             }
             else
             {
@@ -176,6 +176,41 @@ namespace FundooBusinessLayer.Services
                 return this._notesRepository.GetNoteByLabelId(labelId);
             }
             else
+            {
+                return null;
+            }
+        }
+
+        public NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId)
+        {
+            if (noteId != 0 && colour != null && userId != 0)
+            {
+                return this._notesRepository.ColourRequest(noteId, colour, userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+       public List<NoteResponseModel> ReminderList(int userId)
+        {
+            if (userId != 0)
+            {
+                return this._notesRepository.ReminderList(userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public string UploadImage(int userId, int noteId, ImageUploadRequestModel image)
+        {
+            if (userId != 0 && noteId != 0 && image.ImageUrl != null)
+            {
+                return this._notesRepository.UploadImage(userId, noteId, image);
+            }
+            else 
             {
                 return null;
             }

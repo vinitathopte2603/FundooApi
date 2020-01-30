@@ -63,7 +63,7 @@ using System.Threading.Tasks;
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
         /// <returns>returns a boolean value</returns>
-        Task<bool> IsPin(int userId, int noteId);
+        Task<bool> IsPin(int userId, int noteId, TrashArchivePin pin);
 
         /// <summary>
         /// Determines whether the specified user identifier is archive.
@@ -71,7 +71,7 @@ using System.Threading.Tasks;
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
         /// <returns>returns a boolean value</returns>
-        Task<bool> IsArchive(int userId, int noteId);
+        Task<bool> IsArchive(int userId, int noteId, TrashArchivePin archive);
 
         /// <summary>
         /// Determines whether the specified user identifier is trash.
@@ -79,7 +79,7 @@ using System.Threading.Tasks;
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
         /// <returns>returns a boolean value</returns>
-        Task<bool> IsTrash(int userId, int noteId);
+        Task<bool> IsTrash(int userId, int noteId, TrashArchivePin trash);
 
         /// <summary>
         /// Gets all trash.
@@ -115,5 +115,8 @@ using System.Threading.Tasks;
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns a list notes</returns>
         List<NoteResponseModel> GetNoteByLabelId(int labelId);
+        NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
+        List<NoteResponseModel> ReminderList(int userId);
+        string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
     }
 }

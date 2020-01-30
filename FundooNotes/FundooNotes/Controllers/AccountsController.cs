@@ -63,14 +63,21 @@ using Microsoft.IdentityModel.Tokens;
         {
             try
             {
-                var result = this._userBL.Registration(userDB);
-                if (result != null)
+                if (IsFieldEmpty())
                 {
-                    return this.Ok(new { result = "successfully added" });
+                    var result = this._userBL.Registration(userDB);
+                    if (result != null)
+                    {
+                        return this.Ok(new { result = "successfully added" });
+                    }
+                    else
+                    {
+                        return this.BadRequest(new { result = "failed to add" });
+                    }
                 }
                 else
                 {
-                    return this.BadRequest(new { result = "failed to add" });
+                    return this.BadRequest(new { result = "field cannot be empty" });
                 }
             }
             catch (Exception e)
@@ -79,6 +86,7 @@ using Microsoft.IdentityModel.Tokens;
             }
         }
 
+ 
         /// <summary>
         /// Login of the existing user
         /// </summary>
@@ -214,6 +222,22 @@ using Microsoft.IdentityModel.Tokens;
             catch (Exception e)
             {
                 throw new Exception(e.Message);
+            }
+        }
+        private bool IsFieldEmpty()
+        {
+            RegistrationRequestModel registration = new RegistrationRequestModel();
+            if (string.IsNullOrWhiteSpace(registration.FirstName) || registration.FirstName.Length<3||registration.FirstName.Length>15
+                || string.IsNullOrWhiteSpace(registration.LastName) || registration.LastName.Length < 3 || registration.LastName.Length > 15
+                || !registration.Email.Contains(".") || !registration.Email.Contains("@")||
+                string.IsNullOrWhiteSpace(registration.Email) || string.IsNullOrWhiteSpace(registration.Passwrod) || string.IsNullOrWhiteSpace(registration.Type)
+                || registration.IsActive == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
             }
         }
     }

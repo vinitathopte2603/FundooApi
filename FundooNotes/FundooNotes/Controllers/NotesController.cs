@@ -45,25 +45,26 @@ using Microsoft.AspNetCore.Mvc;
         /// <param name="notesModel">The notes model.</param>
         /// <returns>returns the result of specified action</returns>
         [HttpPost]
-       // [Route("AddNotes")]
-        public IActionResult AddNotes([FromBody] NotesRequestModel notesModel)
+        // [Route("AddNotes")]
+        public async Task<IActionResult> AddNotes([FromBody] NotesRequestModel notesModel)
         {
             try
             {
                 var user = HttpContext.User;
                 bool status;
                 string message;
+                NoteResponseModel model = new NoteResponseModel();
                 if (user.HasClaim(c => c.Type == "TokenType"))
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        var data = this._notesBusiness.AddNotes(notesModel, userId);
-                        if (data != null)
+                        model = await this._notesBusiness.AddNotes(notesModel, userId);
+                        if (model != null)
                         {
                             status = true;
                             message = "Note created";
-                            return this.Ok(new { status, message, data });
+                            return this.Ok(new { status, message, model });
                         }
                     }
                 }
@@ -86,7 +87,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpPut]
         [Route("{noteId}")]
-        public async Task<IActionResult> UpdateNote([FromBody] NotesRequestModel notesModel1,int noteId)
+        public async Task<IActionResult> UpdateNote([FromBody] NotesRequestModel notesModel1, int noteId)
         {
             try
             {
@@ -177,7 +178,7 @@ using Microsoft.AspNetCore.Mvc;
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
                         NoteResponseModel result = this._notesBusiness.GetNote(userId, noteId);
-                        if (result!=null)
+                        if (result != null)
                         {
                             status = true;
                             message = "note";
@@ -201,7 +202,7 @@ using Microsoft.AspNetCore.Mvc;
         /// </summary>
         /// <returns>returns the result of specified action</returns>
         [HttpGet]
-      //  [Route("GetAllNotes")]
+        //  [Route("GetAllNotes")]
         public IActionResult GetAllNotes()
         {
             try
@@ -355,7 +356,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpPut]
         [Route("{noteId}/Pinned")]
-        public async Task<IActionResult> IsPin(int noteId)
+        public async Task<IActionResult> IsPin(int noteId, [FromBody] TrashArchivePin pin)
         {
             try
             {
@@ -367,18 +368,30 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = await this._notesBusiness.IsPin(userId, noteId);
-                        if (result)
+                        bool result = await this._notesBusiness.IsPin(userId, noteId, pin);
+                        if (result == true && pin.value == true)
                         {
                             status = true;
                             message = "note pinned";
                             return this.Ok(new { status, message });
                         }
+                        if (result == true && pin.value == false)
+                        {
+                            status = true;
+                            message = "note unpinned";
+                            return this.Ok(new { status, message });
+                        }
+                        if (!result)
+                        {
+                            status = false;
+                            message = "note not found ";
+                            return this.NotFound(new { status, message });
+                        }
                     }
                 }
-                status = true;
-                message = "note  unpinned";
-                return this.Ok(new { status, message });
+                status = false;
+                message = "Note not available";
+                return this.NotFound(new { status, message });
             }
             catch (Exception e)
             {
@@ -393,7 +406,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpPut]
         [Route("{noteId}/Archived")]
-        public async Task<IActionResult> IsArchive(int noteId)
+        public async Task<IActionResult> IsArchive(int noteId, [FromBody] TrashArchivePin archive)
         {
             try
             {
@@ -405,12 +418,24 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = await this._notesBusiness.IsArchive(userId, noteId);
-                        if (result)
+                        bool result = await this._notesBusiness.IsArchive(userId, noteId, archive);
+                        if (result == true && archive.value == true)
                         {
                             status = true;
                             message = "note archived";
                             return this.Ok(new { status, message });
+                        }
+                        if (result == true && archive.value == false)
+                        {
+                            status = true;
+                            message = "note unarchived";
+                            return this.Ok(new { status, message });
+                        }
+                        if (!result)
+                        {
+                            status = false;
+                            message = "note not found ";
+                            return this.NotFound(new { status, message });
                         }
                     }
                 }
@@ -432,7 +457,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpPut]
         [Route("{noteId}/trash")]
-        public async Task<IActionResult> IsTrash(int noteId)
+        public async Task<IActionResult> IsTrash(int noteId, TrashArchivePin trash)
         {
             try
             {
@@ -444,12 +469,24 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = await this._notesBusiness.IsTrash(userId, noteId);
-                        if (result)
+                        bool result = await this._notesBusiness.IsTrash(userId, noteId, trash);
+                        if (result == true && trash.value == true)
                         {
                             status = true;
-                            message = "note archived";
+                            message = "note moved to trash";
                             return this.Ok(new { status, message });
+                        }
+                        if (result == true && trash.value == false)
+                        {
+                            status = true;
+                            message = "note moved from trash";
+                            return this.Ok(new { status, message });
+                        }
+                        if (!result)
+                        {
+                            status = false;
+                            message = "note not found ";
+                            return this.NotFound(new { status, message });
                         }
                     }
                 }
@@ -508,7 +545,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("labelId")]
+        [Route("{labelId}/notebylabelid")]
         public IActionResult GetNoteByLabelId(int labelId)
         {
             try
@@ -540,6 +577,103 @@ using Microsoft.AspNetCore.Mvc;
                 return this.BadRequest(new { e.Message });
             }
         }
-      
+
+        [HttpPut]
+        [Route("{noteId}/changecolor")]
+        public IActionResult ColourRequest(int noteId, [FromBody] ColourRequest colour)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        NoteResponseModel result = this._notesBusiness.ColourRequest(noteId, colour, userId);
+                        if (result != null)
+                        {
+                            status = true;
+                            message = "colour added";
+                            return this.Ok(new { status, message });
+                        }
+                    }
+                }
+                status = false;
+                message = "note not found";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+        [HttpGet]
+        [Route("reminder")]
+        public IActionResult ReminderList()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                       List<NoteResponseModel> data =  this._notesBusiness.ReminderList(userId);
+                        if (data.Count!=0)
+                        {
+                            status = true;
+                            message = "reminder notes";
+                            return this.Ok(new { status, message, data });
+                        }
+                    }
+                }
+
+                status = false;
+                message = "list Empty";
+                return this.NoContent();
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new { e.Message });
+            }
+        }
+        [HttpPut]
+        [Route("{noteId}/Imageupload")]
+        public IActionResult UploadImage(int noteId, ImageUploadRequestModel image)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        string imageUrl = this._notesBusiness.UploadImage(userId, noteId, image);
+                        if (imageUrl != null)
+                        {
+                            status = true;
+                            message = "Image uploaded successfully";
+                            return this.Ok(new { status, message, imageUrl });
+                        }
+                    }
+                }
+                status = false;
+                message = "Image upload failed";
+                return this.BadRequest(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
     }
 }
