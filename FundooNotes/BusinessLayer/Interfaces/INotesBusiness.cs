@@ -55,7 +55,7 @@ using System.Threading.Tasks;
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>returns the list of notes</returns>
-        List<NoteResponseModel> GetAllNotes(int userId);
+        List<NoteResponseModel> GetAllNotes(int userId, string keyword);
 
         /// <summary>
         /// Determines whether the specified user identifier is pin.
@@ -118,5 +118,7 @@ using System.Threading.Tasks;
         NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
         List<NoteResponseModel> ReminderList(int userId);
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
+        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest);
+        
     }
 }

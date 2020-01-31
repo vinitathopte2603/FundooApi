@@ -82,6 +82,7 @@ using System.Text;
         /// The labels.
         /// </value>
         public List<RequestNotesLabels> labels { get; set; }
+        public List<CollaboratorRequestModel> Collaborators { get; set; }
     }
 
     /// <summary>

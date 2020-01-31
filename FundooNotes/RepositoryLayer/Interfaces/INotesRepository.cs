@@ -29,7 +29,7 @@ using System.Text;
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>returns the notes of specified ID</returns>
-        List<NoteResponseModel> GetAllNotes(int userId);
+        List<NoteResponseModel> GetAllNotes(int userId, string keyword);
 
         /// <summary>
         /// Updates the notes.
@@ -115,5 +115,6 @@ using System.Text;
         NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
         List<NoteResponseModel> ReminderList(int userId);
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
+        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest);
     }
 }

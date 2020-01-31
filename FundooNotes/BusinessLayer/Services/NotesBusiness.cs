@@ -72,11 +72,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public List<NoteResponseModel> GetAllNotes(int userId)
+        public List<NoteResponseModel> GetAllNotes(int userId, string keyword)
         {
             if (userId != 0)
             {
-                return _notesRepository.GetAllNotes(userId);
+                return _notesRepository.GetAllNotes(userId, keyword);
             }
             else
             {
@@ -211,6 +211,18 @@ namespace FundooBusinessLayer.Services
                 return this._notesRepository.UploadImage(userId, noteId, image);
             }
             else 
+            {
+                return null;
+            }
+        }
+
+        public NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest)
+        {
+            if (noteId != 0 && collaboratorRequest.CollaboratorRequestModels.Count != 0)
+            {
+                return this._notesRepository.Collaborations(noteId, collaboratorRequest);
+            }
+            else
             {
                 return null;
             }

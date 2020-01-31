@@ -15,6 +15,7 @@ using FundooCommonLayer.UserRequestModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+   
 
     /// <summary>
     /// Notes Controller
@@ -203,7 +204,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpGet]
         //  [Route("GetAllNotes")]
-        public IActionResult GetAllNotes()
+        public IActionResult GetAllNotes(string keyword)
         {
             try
             {
@@ -215,7 +216,7 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetAllNotes(userId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetAllNotes(userId, keyword);
                         if (result != null)
                         {
                             status = true;
@@ -669,6 +670,38 @@ using Microsoft.AspNetCore.Mvc;
                 status = false;
                 message = "Image upload failed";
                 return this.BadRequest(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+        [HttpPut]
+        [Route("{noteId}/collaborate")]
+        public IActionResult AddCollaborator(int noteId, CollaborateMultiple collaborator)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        NoteResponseModel data = this._notesBusiness.Collaborations(noteId, collaborator);
+                        if (data != null)
+                        {
+                            status = true;
+                            message = "collaborated successfully";
+                            return this.Ok(new { status, message, data });
+                        }
+                    }
+                }
+                status = false;
+                message = "collaboration failed";
+                return this.NotFound(new { status, message });
             }
             catch (Exception e)
             {

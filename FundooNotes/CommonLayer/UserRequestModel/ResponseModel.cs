@@ -100,6 +100,7 @@ using System.Text;
         public DateTime IsCreated { get; set; }
         public DateTime IsModified { get; set; }
         public List<LabelResponseModel> labels { get; set; }
+        public List<CollaborationResponseModel> collaborations { get; set; }
     }
     public class LabelResponseModel
     {
@@ -108,5 +109,12 @@ using System.Text;
         public DateTime IsCreated { get; set; }
         public DateTime IsModified { get; set; }
 
+    }
+    public class CollaborationResponseModel
+    {
+        public int UserId { get; set; }
+        public string Email { get; set; }
+        public string Firstname { get; set; }
+        public string LastName { get; set; }
     }
 }

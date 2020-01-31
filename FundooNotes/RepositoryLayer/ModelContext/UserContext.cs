@@ -35,6 +35,7 @@ using Microsoft.EntityFrameworkCore;
         public DbSet<NotesModel> Notes { get; set; }
         public DbSet<LabelModel> Labels { get; set; }
         public DbSet<LabelsNotes> labelsNotes { get; set; }
+        public DbSet<CollaborationModel> collaborations { get; set; }
 
         /// <summary>
         /// Override this method to further configure the model that was discovered by convention from the entity types
