@@ -104,7 +104,7 @@ using System.Text;
             {
                 if (user != null)
                 {
-                    return await this._userRL.Registration(user);
+                    return await _userRL.Registration(user);
                 }
                 else
                 {

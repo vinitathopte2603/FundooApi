@@ -131,6 +131,38 @@ namespace XUnitTestFundooNotes
             var expected = controller.Registration(data);
             Assert.IsType<BadRequestObjectResult>(expected);
         }
+        [Fact]
+        public void Task_Registration_Return_BadRequest_If_Email_DoesnotContain_Dot()
+        {
+            var controller = new AccountsController(userBL, configuration);
+            var data = new RegistrationRequestModel()
+            {
+                FirstName = "Janhavi",
+                LastName = "Katkar",
+                Email = "sawakarejayashree@gmailcom",
+                Passwrod = "Jayashri@456",
+                IsActive = true,
+                Type = "Advanced"
+            };
+            var expected = controller.Registration(data);
+            Assert.IsType<BadRequestObjectResult>(expected);
+        }
+        [Fact]
+        public void Task_Registration_Return_BadRequest_If_Email_DoesnotContain_SpecialSymbol()
+        {
+            var controller = new AccountsController(userBL, configuration);
+            var data = new RegistrationRequestModel()
+            {
+                FirstName = "Janhavi",
+                LastName = "Katkar",
+                Email = "sawakarejayashreegmail.com",
+                Passwrod = "Jayashri@456",
+                IsActive = true,
+                Type = "Advanced"
+            };
+            var expected = controller.Registration(data);
+            Assert.IsType<BadRequestObjectResult>(expected);
+        }
         #endregion
         #region forgot password
         [Fact]

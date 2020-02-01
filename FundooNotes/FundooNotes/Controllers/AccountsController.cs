@@ -59,30 +59,39 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>return the specified action</returns>
         [HttpPost]
         [Route("registration")]
-        public IActionResult Registration([FromBody]RegistrationRequestModel userDB)
+        public async Task<IActionResult> Registration(RegistrationRequestModel userDB)
         {
             try
             {
-                if (IsFieldEmpty())
+                var data =await  this._userBL.Registration(userDB);
+                bool status;
+                string message;
+                if (data != null)
                 {
-                    var result = this._userBL.Registration(userDB);
-                    if (result != null)
+                    if (IsFieldEmpty(userDB))
                     {
-                        return this.Ok(new { result = "successfully added" });
+                        status = true;
+                        message = "Successfully added";
+                        return this.Ok(new { status, message, data });
                     }
                     else
                     {
-                        return this.BadRequest(new { result = "failed to add" });
+                        status = false;
+                        message = "field cannot be empty";
+                        return this.BadRequest(new { status, message });
                     }
                 }
                 else
                 {
-                    return this.BadRequest(new { result = "field cannot be empty" });
+                    status = false;
+                    message = "failed to add";
+                    return this.BadRequest(new { status, message });
                 }
             }
+                
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                return this.BadRequest(e.Message);
             }
         }
 
@@ -210,7 +219,8 @@ using Microsoft.IdentityModel.Tokens;
                 {
                 new Claim("Id", response.Id.ToString()),
                 new Claim("Email", response.Email),
-                new Claim("TokenType", type)
+                new Claim("TokenType", type),
+                new Claim("UserType", response.UserRole)
             };
                 var token = new JwtSecurityToken(this._config["Jwt:Issuer"],
                     this._config["Jwt:Issuer"],
@@ -224,14 +234,14 @@ using Microsoft.IdentityModel.Tokens;
                 throw new Exception(e.Message);
             }
         }
-        private bool IsFieldEmpty()
+        private bool IsFieldEmpty(RegistrationRequestModel registration)
         {
-            RegistrationRequestModel registration = new RegistrationRequestModel();
+           
             if (string.IsNullOrWhiteSpace(registration.FirstName) || registration.FirstName.Length<3||registration.FirstName.Length>15
                 || string.IsNullOrWhiteSpace(registration.LastName) || registration.LastName.Length < 3 || registration.LastName.Length > 15
                 || !registration.Email.Contains(".") || !registration.Email.Contains("@")||
                 string.IsNullOrWhiteSpace(registration.Email) || string.IsNullOrWhiteSpace(registration.Passwrod) || string.IsNullOrWhiteSpace(registration.Type)
-                || registration.IsActive == null)
+                || registration.IsActive == null )
             {
                 return false;
             }

@@ -7,7 +7,8 @@ namespace FundooCommonLayer.Model
 {
     using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -93,5 +94,14 @@ using System.Text;
         /// The time of last modification done
         /// </value>
         public DateTime IsModified { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user role.
+        /// </summary>
+        /// <value>
+        /// The user role.
+        /// </value>
+         [DefaultValue("User")]
+        public string UserRole { get; set; }
     }
 }

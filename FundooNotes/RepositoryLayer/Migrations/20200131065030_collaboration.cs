@@ -1,8 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿namespace FundooRepositoryLayer.Migrations
+{
+    using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FundooRepositoryLayer.Migrations
-{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <seealso cref="Microsoft.EntityFrameworkCore.Migrations.Migration" />
     public partial class collaboration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -41,8 +41,9 @@ using System.Text;
         /// <summary>
         /// Resets the password.
         /// </summary>
-        /// <param name="resetPassword">The reset password.</param>
-        /// <returns>returns a true if password is successfully changed </returns>
+        /// <param name="reset">The reset.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns a boolean value</returns>
         Task<bool> ResetPassword(ResetPassword reset, int userId);
     }
 }

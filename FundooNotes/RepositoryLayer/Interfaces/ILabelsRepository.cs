@@ -5,12 +5,12 @@
 //-----------------------------------------------------------------------
 namespace FundooRepositoryLayer.Interfaces
 {
-    using FundooCommonLayer.Model;
-using FundooCommonLayer.UserRequestModel;
-using System;
+    using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+    using FundooCommonLayer.Model;
+    using FundooCommonLayer.UserRequestModel;
 
     /// <summary>
     /// method declaration
@@ -48,6 +48,5 @@ using System.Threading.Tasks;
         /// <param name="userId">The user identifier.</param>
         /// <returns>returns the list of labels</returns>
         List<LabelResponseModel> GetAllLabels(int userId);
-     
     }
 }

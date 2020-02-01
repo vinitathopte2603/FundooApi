@@ -5,12 +5,12 @@
 //-----------------------------------------------------------------------
 namespace FundooRepositoryLayer.Interfaces
 {
-    using FundooCommonLayer.Model;
-    using FundooCommonLayer.UserRequestModel;
     using System;
 using System.Collections.Generic;
 using System.Text;
     using System.Threading.Tasks;
+    using FundooCommonLayer.Model;
+    using FundooCommonLayer.UserRequestModel;
 
     /// <summary>
     /// method declaration
@@ -20,23 +20,27 @@ using System.Text;
         /// <summary>
         /// Adds the notes.
         /// </summary>
-        /// <param name="notesModel">The notes model.</param>
-        /// <returns>returns the added note</returns>
+        /// <param name="notesModel">The notesModel.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns the list of notes</returns>
         Task<NoteResponseModel> AddNotes(NotesRequestModel notesModel, int userId);
 
         /// <summary>
         /// Gets all notes.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
-        /// <returns>returns the notes of specified ID</returns>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>returns list of notes</returns>
         List<NoteResponseModel> GetAllNotes(int userId, string keyword);
 
         /// <summary>
         /// Updates the notes.
         /// </summary>
         /// <param name="notesModel">The notes model.</param>
-        /// <returns>returns the updated notes</returns>
-        Task<NoteResponseModel> UpdateNotes(NotesRequestModel notesModel,int noteId, int userId);
+        /// <param name="noteId">The note identifier.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns the list of notes</returns>
+        Task<NoteResponseModel> UpdateNotes(NotesRequestModel notesModel, int noteId, int userId);
 
         /// <summary>
         /// Deletes the note.
@@ -59,6 +63,7 @@ using System.Text;
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
+        /// <param name="pin">The pin.</param>
         /// <returns>returns a boolean value</returns>
         Task<bool> IsPin(int userId, int noteId, TrashArchivePin pin);
 
@@ -67,7 +72,8 @@ using System.Text;
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
-        /// <returns>returns boolean value</returns>
+        /// <param name="archive">The archive.</param>
+        /// <returns>returns a boolean value</returns>
         Task<bool> IsArchive(int userId, int noteId, TrashArchivePin archive);
 
         /// <summary>
@@ -75,6 +81,7 @@ using System.Text;
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="noteId">The note identifier.</param>
+        /// <param name="trash">The trash.</param>
         /// <returns>returns a boolean value</returns>
         Task<bool> IsTrash(int userId, int noteId, TrashArchivePin trash);
 
@@ -82,7 +89,7 @@ using System.Text;
         /// Gets all trash.
         /// </summary>
         /// <param name="userId">The user identifier.</param>
-        /// <returns>returnd the notes in trash</returns>
+        /// <returns>returns the notes in trash</returns>
         List<NoteResponseModel> GetAllTrash(int userId);
 
         /// <summary>
@@ -112,9 +119,38 @@ using System.Text;
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns list of notes</returns>
         List<NoteResponseModel> GetNoteByLabelId(int labelId);
+
+        /// <summary>
+        /// Colors the request.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <param name="colour">The color.</param>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns a note</returns>
         NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
+
+        /// <summary>
+        /// Reminders the list.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>returns a list of notes</returns>
         List<NoteResponseModel> ReminderList(int userId);
+
+        /// <summary>
+        /// Uploads the image.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="noteId">The note identifier.</param>
+        /// <param name="image">The image.</param>
+        /// <returns>the image url</returns>
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
+
+        /// <summary>
+        /// Collaborates the specified note identifier.
+        /// </summary>
+        /// <param name="noteId">The note identifier.</param>
+        /// <param name="collaboratorRequest">The collaborator request.</param>
+        /// <returns>the note</returns>
         NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest);
     }
 }

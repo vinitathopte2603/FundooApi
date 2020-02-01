@@ -92,6 +92,8 @@ using Microsoft.IdentityModel.Tokens;
             services.AddTransient<INotesRepository, NotesRepository>();
             services.AddTransient<ILabelsBusiness, LabelsBusiness>();
             services.AddTransient<ILabelsRepository, LabelsRepository>();
+            services.AddTransient<IAdminSignUpBusiness, AdminSignUpBusiness>();
+            services.AddTransient<IAdminSignUpRepository, AdminSignUpRepository>();
 
         }
 

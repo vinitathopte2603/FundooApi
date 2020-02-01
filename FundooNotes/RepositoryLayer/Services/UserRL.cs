@@ -32,7 +32,7 @@ using System.Text;
         /// <param name="context">The context.</param>
         public UserRL(UserContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         /// <summary>
@@ -95,7 +95,9 @@ using System.Text;
                         Email = data.Email,
                         IsActive = data.IsActive,
                         IsCreated = data.IsCreated,
-                        IsModified = data.IsModified
+                        IsModified = data.IsModified,
+                        Type = data.Type,
+                        UserRole = data.UserRole
                     };
                     return userdata;
                 }
@@ -125,13 +127,14 @@ using System.Text;
                 UserDB dB = new UserDB()
                 {
                     FirstName = user.FirstName,
-                    LastName=user.LastName,
-                    Email=user.Email,
-                    Passwrod=user.Passwrod,
-                    Type=user.Type,
-                    IsActive=true,
-                    IsCreated=DateTime.Now,
-                    IsModified=DateTime.Now
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Passwrod = user.Passwrod,
+                    Type = user.Type,
+                    IsActive = true,
+                    IsCreated = DateTime.Now,
+                    IsModified = DateTime.Now,
+                    UserRole = "regular user"
                 };
                 _context.Users.Add(dB);
                 await _context.SaveChangesAsync();
@@ -145,7 +148,9 @@ using System.Text;
                     Type = dB.Type,
                     IsActive = dB.IsActive,
                     IsCreated = dB.IsCreated,
-                    IsModified = dB.IsModified
+                    IsModified = dB.IsModified,
+                    UserRole=dB.UserRole
+                    
                 };
                 return responseModel;
             }
