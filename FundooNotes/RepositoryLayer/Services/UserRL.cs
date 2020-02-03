@@ -149,8 +149,7 @@ using System.Text;
                     IsActive = dB.IsActive,
                     IsCreated = dB.IsCreated,
                     IsModified = dB.IsModified,
-                    UserRole=dB.UserRole
-                    
+                    UserRole=dB.UserRole 
                 };
                 return responseModel;
             }

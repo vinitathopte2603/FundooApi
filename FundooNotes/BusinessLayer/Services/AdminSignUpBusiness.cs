@@ -39,5 +39,21 @@ namespace FundooBusinessLayer.Services
                 return null;
             }
         }
+
+        public Dictionary<string, int> Statistics(int userId)
+        {
+            if (userId != 0)
+            {
+                return this._adminSignUpRepository.Statistics(userId);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public List<GetUsersResponseModel> GetUsers(int pageNumber, int pageSize)
+        {
+            return this._adminSignUpRepository.GetUsers(pageNumber, pageSize);
+        }
     }
 }

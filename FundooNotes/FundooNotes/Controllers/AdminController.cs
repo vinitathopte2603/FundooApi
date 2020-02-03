@@ -77,6 +77,76 @@ namespace FundooNotes.Controllers
                 return this.BadRequest(e.Message);
             }
         }
+        [HttpGet]
+        [Route("statistics")]
+        public IActionResult Statistics()
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        if (user.Claims.FirstOrDefault(c => c.Type == "UserType").Value == "Admin")
+                        {
+                            int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                            var data = _adminSignUpBusiness.Statistics(userId);
+                            if (data != null)
+                            {
+                                status = true;
+                                message = "statistics";
+                                return this.Ok(new { status, message, data });
+                            }
+                        }
+                    }
+                }
+                status = false;
+                message = "data not found";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+        [HttpGet]
+        [Route("users")]
+        public IActionResult GetAllUsers(int pageNumber, int pageSize)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        if (user.Claims.FirstOrDefault(c => c.Type == "UserType").Value == "Admin")
+                        {
+                            int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                            var data = _adminSignUpBusiness.GetUsers(pageNumber, pageSize);
+                            if (data != null)
+                            {
+                                status = true;
+                                message = "users";
+                                return this.Ok(new { status, message, data });
+                            }
+                        }
+                    }
+                }
+                status = false;
+                message = "data not found";
+                return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
         private string GenerateJSONWebToken(ResponseModel response, string type)
         {
 

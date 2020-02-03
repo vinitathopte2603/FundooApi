@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FundooCommonLayer.Model;
@@ -27,11 +28,11 @@ namespace FundooRepositoryLayer.Services
                     LastName = adminRegistration.LastName,
                     Email = adminRegistration.Email,
                     Passwrod = adminRegistration.Passwrod,
-                    Type = adminRegistration.Type,
+                    Type = "Advanced",
                     IsActive = true,
                     IsCreated = DateTime.Now,
                     IsModified = DateTime.Now,
-                    UserRole ="Admin"
+                    UserRole = "Admin"
                 };
                 _user.Users.Add(dB);
                 await _user.SaveChangesAsync();
@@ -86,6 +87,45 @@ namespace FundooRepositoryLayer.Services
             {
                 throw new Exception(e.Message);
             }
+        }
+        public Dictionary<string, int> Statistics(int userId)
+        {
+            Dictionary<string, int> keys = new Dictionary<string, int>();
+            int basic = 0;
+            int advanced = 0;
+            basic = _user.Users.Where(linq => linq.UserRole == "regular user" && linq.Type == "Basic").Count();
+            advanced = _user.Users.Where(linq => linq.UserRole == "regular user" && linq.Type == "Advanced").Count();
+            keys.Add("Basic", basic);
+            keys.Add("Advanced", advanced);
+            return keys;
+        }
+        public List<GetUsersResponseModel> GetUsers(int pageNumber, int pageSize)
+        {
+            List<GetUsersResponseModel> getUsers = _user.Users.Where(linq => linq.UserRole == "regular user").Select
+                (linq => new GetUsersResponseModel
+                {
+                    UserId = linq.Id,
+                    FirstName = linq.FirstName,
+                    LastName = linq.LastName,
+                    Email = linq.Email,
+                    Type = linq.Type
+                }).ToList();
+            foreach (GetUsersResponseModel get in getUsers)
+            {
+                get.NumberOfNotes = _user.Notes.Where(linq => linq.ID == get.UserId).Count();
+            }
+            int count = getUsers.Count();
+            int currentPage = pageNumber;
+            int sizeOfPage = pageSize;
+            int totalPages = (int)Math.Ceiling(count / (double)sizeOfPage);
+            if (currentPage == 0)
+            {
+                currentPage++;
+                var items = getUsers.Skip(currentPage - 1 * sizeOfPage).Take(pageSize).ToList();
+            }
+            int numberOfObjectsPerPage = pageSize;
+            var result = getUsers.Skip(numberOfObjectsPerPage * pageNumber).Take(numberOfObjectsPerPage);
+            return result.ToList();
         }
     }
 }

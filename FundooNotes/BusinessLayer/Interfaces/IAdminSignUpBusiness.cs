@@ -10,5 +10,7 @@ namespace FundooBusinessLayer.Interfaces
     {
         Task<ResponseModel> AdminRegistration(RegistrationRequestModel adminRegistration);
         ResponseModel AdminLogin(Login login);
+        Dictionary<string, int> Statistics(int userId);
+        List<GetUsersResponseModel> GetUsers(int pageNumber, int pageSize);
     }
 }

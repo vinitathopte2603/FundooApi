@@ -157,23 +157,46 @@ using System.Threading.Tasks;
         {
             try
             {
-                var owner = _userContext.Users.FirstOrDefault(linq => linq.Id == userId);
-                List<NoteResponseModel> notes1 = _userContext.collaborations.Where(linq => linq.UserId == owner.Id)
+              
+
+
+                List<NoteResponseModel> collabNotes = _userContext.collaborations.Where(linq => linq.UserId == userId)
                     .Join(_userContext.Notes,
                     collab => collab.NoteId,
                     notetable => notetable.NotesID,
                       (collab, notetable) => new NoteResponseModel
                       {
-                          Title=notetable.Title,
-                          Description=notetable.Description,
+                          Title = notetable.Title,
+                          Description = notetable.Description,
                           Reminder = notetable.Reminder,
                           Image = notetable.Image,
                           IsArchive = notetable.IsArchive,
                           IsPin = notetable.IsPin,
                           IsCreated = notetable.IsCreated,
-                          IsModified = notetable.IsModified
+                          IsModified = notetable.IsModified,
+                          Id=notetable.NotesID  
                       }
                     ).ToList();
+
+                foreach (var collab in collabNotes)
+                {
+                    List<CollaborationResponseModel> collaborationResponses = _userContext.Notes
+                           .Where(note => note.NotesID == collab.Id)
+                           .Join(_userContext.Users,
+                           collabnote => collabnote.ID,
+                           user => user.Id,
+                           (collabnote, user) => new CollaborationResponseModel
+                           {
+                               UserId = user.Id,
+                               Email = user.Email,
+                               Firstname = user.FirstName,
+                               LastName = user.LastName
+                           }).ToList();
+
+                    collab.collaborations = collaborationResponses;
+
+                }
+
 
 
                 List<NoteResponseModel> notes = _userContext.Notes.Where(linq => linq.ID == userId).Select(linq => new NoteResponseModel
@@ -184,24 +207,24 @@ using System.Threading.Tasks;
                     Reminder = linq.Reminder,
                     Image = linq.Image,
                     IsArchive = linq.IsArchive,
-                    IsPin =linq.IsPin,
-                    IsTrash=linq.IsTrash,
-                    IsCreated=linq.IsCreated,
-                    IsModified=linq.IsModified
-                  }).ToList();
+                    IsPin = linq.IsPin,
+                    IsTrash = linq.IsTrash,
+                    IsCreated = linq.IsCreated,
+                    IsModified = linq.IsModified
+                }).ToList();
                 if (notes.Count != 0 && notes != null)
                 {
                     foreach (NoteResponseModel noteResponse in notes)
                     {
                         List<LabelResponseModel> labelResponses = _userContext.labelsNotes.Where(note => note.NoteId == noteResponse.Id).Join(_userContext.Labels,
                             labelnote => labelnote.LabelId,
-                            label => label.Id, 
+                            label => label.Id,
                             (labelnote, label) => new LabelResponseModel
                             {
-                                Id=labelnote.LabelId,
-                                Label= label.Label,
-                                IsCreated= label.IsCreated,
-                                IsModified= label.IsModified
+                                Id = labelnote.LabelId,
+                                Label = label.Label,
+                                IsCreated = label.IsCreated,
+                                IsModified = label.IsModified
                             }).ToList();
                         noteResponse.labels = labelResponses;
 
@@ -220,7 +243,7 @@ using System.Threading.Tasks;
                         noteResponse.collaborations = collaborationResponses;
                     }
                 }
-                notes.AddRange(notes1);
+                notes.AddRange(collabNotes);
                 if (keyword != null)
                 {
                     List<NoteResponseModel> searchNoteResponses = SearchNote(userId, keyword);
@@ -912,7 +935,7 @@ using System.Threading.Tasks;
                 throw new Exception(e.Message);
             }
         }
-        public List<NoteResponseModel> SearchNote(int userId, string keyword)
+        private List<NoteResponseModel> SearchNote(int userId, string keyword)
         {
             List<NoteResponseModel> searchNoteResponses = null;
             if (keyword != null)
@@ -933,6 +956,22 @@ using System.Threading.Tasks;
                     IsModified = linq.IsModified
 
                 }).ToList();
+                foreach (NoteResponseModel notecollab in searchNoteResponses)
+                {
+                    List<CollaborationResponseModel> collaborationResponses = _userContext.collaborations
+                          .Where(note => note.NoteId == notecollab.Id)
+                          .Join(_userContext.Users,
+                          collab => collab.UserId,
+                          user => user.Id,
+                          (collab, user) => new CollaborationResponseModel
+                          {
+                              UserId = user.Id,
+                              Email = user.Email,
+                              Firstname = user.FirstName,
+                              LastName = user.LastName
+                          }).ToList();
+                    notecollab.collaborations = collaborationResponses;
+                }
             }
             return searchNoteResponses;
         }
