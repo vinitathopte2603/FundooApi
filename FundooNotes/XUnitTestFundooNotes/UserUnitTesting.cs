@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace XUnitTestFundooNotes
@@ -212,14 +213,14 @@ namespace XUnitTestFundooNotes
         #endregion
         #region reset password
         [Fact]
-        public void Task_Reset_Password_Return_Ok()
+        public async void Task_Reset_Password_Return_Ok()
         {
             var controller = new AccountsController(userBL, configuration);
             var data = new ResetPassword()
             {
                 Password = "Pooja@123"
             };
-            var expected = controller.ResetPassword(data);
+            var expected = await controller.ResetPassword(data);
             Assert.IsType<OkObjectResult>(expected);
         }
         [Fact]

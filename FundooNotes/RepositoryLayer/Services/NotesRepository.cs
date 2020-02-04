@@ -319,6 +319,9 @@ using System.Threading.Tasks;
                     List<LabelsNotes> labelsnotes = _userContext.labelsNotes.Where(linq => linq.NoteId == notesId).ToList();
                     _userContext.labelsNotes.RemoveRange(labelsnotes);
                     await this._userContext.SaveChangesAsync();
+                    List<CollaborationModel> collaborationModels = _userContext.collaborations.Where(linq => linq.NoteId == notesId).ToList();
+                    _userContext.collaborations.RemoveRange(collaborationModels);
+                    await this._userContext.SaveChangesAsync();
                     if (note.IsTrash == true)
                     {
                         _userContext.Notes.Remove(note);
@@ -691,6 +694,15 @@ using System.Threading.Tasks;
                 List<NotesModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == true) && (linq.IsArchive == false) && (linq.IsPin == false)).ToList();
                 if (notesModels.Count != 0)
                 {
+                    foreach (NotesModel notes in notesModels)
+                    {
+                        List<LabelsNotes> labelsNotes = _userContext.labelsNotes.Where(linq => linq.NoteId == notes.NotesID).ToList();
+                        _userContext.labelsNotes.RemoveRange(labelsNotes);
+                        _userContext.SaveChanges();
+                        List<CollaborationModel> collaborationModels = _userContext.collaborations.Where(linq => linq.NoteId == notes.NotesID).ToList();
+                        _userContext.collaborations.RemoveRange(collaborationModels);
+                        _userContext.SaveChanges();
+                    }
                     _userContext.Notes.RemoveRange(notesModels);
                     await _userContext.SaveChangesAsync();
                     return true;
