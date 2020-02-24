@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 namespace FundooCommonLayer.Model
 {
+    using Microsoft.AspNetCore.Http;
     using System;
 using System.Collections.Generic;
     using System.ComponentModel;
@@ -103,5 +104,6 @@ using System.Text;
         /// </value>
          [DefaultValue("User")]
         public string UserRole { get; set; }
+        public string Profile { get; set; }
     }
 }

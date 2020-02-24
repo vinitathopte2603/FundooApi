@@ -93,22 +93,23 @@ namespace FundooRepositoryLayer.Services
             Dictionary<string, int> keys = new Dictionary<string, int>();
             int basic = 0;
             int advanced = 0;
-            basic = _user.Users.Where(linq => linq.UserRole == "regular user" && linq.Type == "Basic").Count();
-            advanced = _user.Users.Where(linq => linq.UserRole == "regular user" && linq.Type == "Advanced").Count();
+            basic = _user.Users.Where(linq => linq.UserRole == "User" && linq.Type == "Basic").Count();
+            advanced = _user.Users.Where(linq => linq.UserRole == "User" && linq.Type == "Advanced").Count();
             keys.Add("Basic", basic);
             keys.Add("Advanced", advanced);
             return keys;
         }
         public List<GetUsersResponseModel> GetUsers(int pageNumber, int pageSize)
         {
-            List<GetUsersResponseModel> getUsers = _user.Users.Where(linq => linq.UserRole == "regular user").Select
+            List<GetUsersResponseModel> getUsers = _user.Users.Where(linq => linq.UserRole == "User").Select
                 (linq => new GetUsersResponseModel
                 {
                     UserId = linq.Id,
                     FirstName = linq.FirstName,
                     LastName = linq.LastName,
                     Email = linq.Email,
-                    Type = linq.Type
+                    Type = linq.Type,
+                    Profile=linq.Profile 
                 }).ToList();
             foreach (GetUsersResponseModel get in getUsers)
             {

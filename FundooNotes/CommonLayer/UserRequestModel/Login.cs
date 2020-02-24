@@ -63,7 +63,7 @@ using System.Text;
         /// The password.
         /// </value>
         [Required]
-        [RegularExpression("@^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])(?=.{8,15})")]
+        //[RegularExpression("@^(?!.([A-Za-z0-9])1{1})(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&-]).{8,}$)")]
         public string Password { get; set; }
     }
 }

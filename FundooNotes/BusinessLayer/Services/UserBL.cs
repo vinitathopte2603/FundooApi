@@ -90,6 +90,18 @@ using System.Text;
             }
         }
 
+        public string ProfilePicture(int userId, ImageUploadRequestModel imageUpload)
+        {
+            if (imageUpload != null)
+            {
+                return _userRL.ProfilePicture(userId, imageUpload);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Registers the specified user.
         /// </summary>

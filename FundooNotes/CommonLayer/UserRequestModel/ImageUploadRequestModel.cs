@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 namespace FundooCommonLayer.UserRequestModel
 {
+    using Microsoft.AspNetCore.Http;
     using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,11 +16,11 @@ using System.Text;
     public class ImageUploadRequestModel
     {
         /// <summary>
-        /// Gets or sets the image URL.
+        /// Gets or sets the image URL. 
         /// </summary>
         /// <value>
         /// The image URL.
         /// </value>
-        public string ImageUrl { get; set; }
+        public IFormFile ImageUrl { get; set; }
     }
 }

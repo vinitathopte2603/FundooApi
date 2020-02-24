@@ -23,6 +23,18 @@
           "lib/netstandard2.0/Experimental.System.Messaging.dll": {}
         }
       },
+      "Microsoft.AspNetCore.Http.Features/2.1.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.1.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.dll": {}
+        }
+      },
       "Microsoft.Azure.DocumentDB/2.9.2": {
         "type": "package",
         "build": {
@@ -807,6 +819,7 @@
         "dependencies": {
           "CloudinaryDotNet": "1.10.0",
           "Experimental.System.Messaging": "1.1.0",
+          "Microsoft.AspNetCore.Http.Features": "2.1.1",
           "Microsoft.Azure.DocumentDB": "2.9.2",
           "System.ComponentModel.Annotations": "4.7.0"
         },
@@ -869,6 +882,19 @@
         "experimental.system.messaging.nuspec",
         "lib/netstandard2.0/Experimental.System.Messaging.dll",
         "lib/netstandard2.0/Experimental.System.Messaging.xml"
+      ]
+    },
+    "Microsoft.AspNetCore.Http.Features/2.1.1": {
+      "sha512": "VklZ7hWgSvHBcDtwYYkdMdI/adlf7ebxTZ9kdzAhX+gUs5jSHE9mZlTamdgf9miSsxc1QjNazHXTDJdVPZKKTw==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.http.features/2.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.dll",
+        "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.xml",
+        "microsoft.aspnetcore.http.features.2.1.1.nupkg.sha512",
+        "microsoft.aspnetcore.http.features.nuspec"
       ]
     },
     "Microsoft.Azure.DocumentDB/2.9.2": {

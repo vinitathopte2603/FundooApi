@@ -30,7 +30,7 @@ using System.Text;
                 MailMessage mailMessage = new MailMessage("fundooapplication@gmail.com", forgotPassword.Email);
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
                 mailMessage.Subject = "Forget Password Link";
-                mailMessage.Body = "Click link to reset password <br>" + token;
+                mailMessage.Body = "http://localhost:53715/api/Accounts/ResetPassword" + token;
                 mailMessage.IsBodyHtml = true;
                 smtpClient.UseDefaultCredentials = true;
                 smtpClient.EnableSsl = true;

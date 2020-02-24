@@ -38,6 +38,17 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Http.Features/2.1.1": {
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.1.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.dll": {
+            "assemblyVersion": "2.1.1.0",
+            "fileVersion": "2.1.1.18157"
+          }
+        }
+      },
       "Microsoft.Azure.DocumentDB/2.9.2": {},
       "Microsoft.CSharp/4.5.0": {
         "runtime": {
@@ -652,6 +663,7 @@
         "dependencies": {
           "CloudinaryDotNet": "1.10.0",
           "Experimental.System.Messaging": "1.1.0",
+          "Microsoft.AspNetCore.Http.Features": "2.1.1",
           "Microsoft.Azure.DocumentDB": "2.9.2",
           "System.ComponentModel.Annotations": "4.7.0"
         },
@@ -680,6 +692,13 @@
       "sha512": "sha512-vub7Mtt2WFdFKTZKECVuZx6feP5kUpS9EfVy+Yu4GDfdlMwivRdX4TbdkDYS2lKqCjqzUbnxTbJei1IOqC+CnA==",
       "path": "experimental.system.messaging/1.1.0",
       "hashPath": "experimental.system.messaging.1.1.0.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Http.Features/2.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VklZ7hWgSvHBcDtwYYkdMdI/adlf7ebxTZ9kdzAhX+gUs5jSHE9mZlTamdgf9miSsxc1QjNazHXTDJdVPZKKTw==",
+      "path": "microsoft.aspnetcore.http.features/2.1.1",
+      "hashPath": "microsoft.aspnetcore.http.features.2.1.1.nupkg.sha512"
     },
     "Microsoft.Azure.DocumentDB/2.9.2": {
       "type": "package",

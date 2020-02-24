@@ -46,7 +46,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns specified action</returns>
         [HttpPost]
        // [Route("Addlabel")]
-        public IActionResult AddLabel([FromBody]LabelsRequestModel label)
+        public async Task<IActionResult> AddLabel([FromBody]LabelsRequestModel label)
         {
             try
             {
@@ -58,7 +58,7 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        var data = this._labelsBusiness.AddLabel(label, userId);
+                        var data = await this._labelsBusiness.AddLabel(label, userId);
                         if (data != null)
                         {
                             status = true;
@@ -162,7 +162,7 @@ using Microsoft.AspNetCore.Mvc;
         /// <returns>returns the result of specified action</returns>
         [HttpPut]
         [Route("{labelId}")]
-        public IActionResult UpdateLabel(int labelId, LabelsRequestModel label)
+        public async Task<IActionResult> UpdateLabel(int labelId, LabelsRequestModel label)
         {
             try
             {
@@ -174,7 +174,7 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        var data = this._labelsBusiness.UpdateLabel(userId, labelId, label);
+                        var data = await this._labelsBusiness.UpdateLabel(userId, labelId, label);
                         if (data != null)
                         {
                             status = true;

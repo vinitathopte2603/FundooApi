@@ -14,6 +14,7 @@ using System.Text;
     using FundooCommonLayer.UserRequestModel;
     using FundooRepositoryLayer.Interfaces;
     using FundooRepositoryLayer.ModelContext;
+    
 
     /// <summary>
     /// Implementation of the User interface of repository layer
@@ -57,7 +58,8 @@ using System.Text;
                         Email = data.Email,
                         IsActive = data.IsActive,
                         IsCreated = data.IsCreated,
-                        IsModified = data.IsModified
+                        IsModified = data.IsModified,
+                        UserRole=data.UserRole
                     };
                     return userdata;
                 }
@@ -84,6 +86,7 @@ using System.Text;
             try
             {
                 login.Password = EncodeDecode.EncodePassword(login.Password);
+               
                 var data = this._context.Users.FirstOrDefault(user => user.Email == login.Email && user.Passwrod == login.Password);
                 if (data != null)
                 {
@@ -134,7 +137,7 @@ using System.Text;
                     IsActive = true,
                     IsCreated = DateTime.Now,
                     IsModified = DateTime.Now,
-                    UserRole = "regular user"
+                    UserRole = "User"
                 };
                 _context.Users.Add(dB);
                 await _context.SaveChangesAsync();
@@ -188,6 +191,24 @@ using System.Text;
             catch (Exception e)
             {
                 throw new Exception(e.Message);
+            }
+        }
+        public string ProfilePicture(int userId, ImageUploadRequestModel imageUpload)
+        {
+            var data = _context.Users.FirstOrDefault(linq => linq.Id == userId);
+            if (data != null)
+            {
+                string imageUrl = ImageUploadCloudinary.AddPhoto(imageUpload.ImageUrl);
+                data.Profile = imageUrl;
+                data.IsModified = DateTime.Now;
+                var note = this._context.Users.Attach(data);
+                note.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                this._context.SaveChanges();
+                return imageUrl;
+            }
+            else
+            {
+                return null;
             }
         }
     }

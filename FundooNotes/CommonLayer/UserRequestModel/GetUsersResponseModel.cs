@@ -12,5 +12,6 @@ namespace FundooCommonLayer.UserRequestModel
         public string Email { get; set; }
         public string Type { get; set; }
         public int NumberOfNotes { get; set; }
+        public string Profile { get; set; }
     }
 }

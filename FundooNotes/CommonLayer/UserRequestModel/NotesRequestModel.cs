@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 namespace FundooCommonLayer.UserRequestModel
 {
+    using Microsoft.AspNetCore.Http;
     using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,13 +42,6 @@ using System.Text;
         /// </value>
         public DateTime? Reminder { get; set; }
 
-        /// <summary>
-        /// Gets or sets the image.
-        /// </summary>
-        /// <value>
-        /// The image.
-        /// </value>
-        public string Image { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is archive.

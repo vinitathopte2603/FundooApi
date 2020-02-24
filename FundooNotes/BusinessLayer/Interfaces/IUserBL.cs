@@ -44,5 +44,6 @@ using System.Text;
         /// <param name="resetPassword">The new password.</param>
         /// <returns>returns a true if password is changed else returns false</returns>
         Task<bool> ResetPassword(ResetPassword password, int userId);
+        string ProfilePicture(int userId, ImageUploadRequestModel imageUpload);
     }
 }

@@ -60,7 +60,7 @@ using Microsoft.IdentityModel.Tokens;
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => 
             { 
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
@@ -94,6 +94,16 @@ using Microsoft.IdentityModel.Tokens;
             services.AddTransient<ILabelsRepository, LabelsRepository>();
             services.AddTransient<IAdminSignUpBusiness, AdminSignUpBusiness>();
             services.AddTransient<IAdminSignUpRepository, AdminSignUpRepository>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:3000")
+                    );
+            });
 
         }
 
@@ -122,6 +132,7 @@ using Microsoft.IdentityModel.Tokens;
                 );
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
             app.UseMvc();
             
         }

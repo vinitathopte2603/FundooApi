@@ -114,7 +114,7 @@ using System.Threading.Tasks;
         /// </summary>
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns a list notes</returns>
-        List<NoteResponseModel> GetNoteByLabelId(int labelId);
+        List<NoteResponseModel> GetNoteByLabelId(int labelId,int userId);
         NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
         List<NoteResponseModel> ReminderList(int userId);
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);

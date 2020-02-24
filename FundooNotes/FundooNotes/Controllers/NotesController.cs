@@ -15,7 +15,8 @@ using FundooCommonLayer.UserRequestModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-   
+    using StackExchange.Redis;
+
 
     /// <summary>
     /// Notes Controller
@@ -60,12 +61,12 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        model = await this._notesBusiness.AddNotes(notesModel, userId);
-                        if (model != null)
+                        var data = await this._notesBusiness.AddNotes(notesModel, userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "Note created";
-                            return this.Ok(new { status, message, model });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
@@ -216,12 +217,12 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetAllNotes(userId, keyword);
-                        if (result != null)
+                        List<NoteResponseModel> data = this._notesBusiness.GetAllNotes(userId, keyword);
+                        if (data != null)
                         {
                             status = true;
                             message = "note";
-                            return this.Ok(new { status, message, result });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
@@ -254,12 +255,12 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetAllTrash(userId);
-                        if (result != null)
+                        List<NoteResponseModel> data = this._notesBusiness.GetAllTrash(userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "note";
-                            return this.Ok(new { status, message, result });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
@@ -330,12 +331,12 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetAllArchive(userId);
-                        if (result != null)
+                        List<NoteResponseModel> data = this._notesBusiness.GetAllArchive(userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "Archived notes";
-                            return this.Ok(new { status, message, result });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
@@ -559,7 +560,7 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetNoteByLabelId(labelId);
+                        List<NoteResponseModel> result = this._notesBusiness.GetNoteByLabelId(labelId,userId);
                         if (result != null)
                         {
                             status = true;
@@ -580,7 +581,7 @@ using Microsoft.AspNetCore.Mvc;
         }
 
         [HttpPut]
-        [Route("{noteId}/changecolor")]
+        [Route("{noteId}/color")]
         public IActionResult ColourRequest(int noteId, [FromBody] ColourRequest colour)
         {
             try
@@ -646,7 +647,7 @@ using Microsoft.AspNetCore.Mvc;
         }
         [HttpPut]
         [Route("{noteId}/Imageupload")]
-        public IActionResult UploadImage(int noteId, ImageUploadRequestModel image)
+        public IActionResult UploadImage(int noteId,[FromForm] ImageUploadRequestModel image)
         {
             try
             {

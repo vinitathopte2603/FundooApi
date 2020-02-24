@@ -45,5 +45,6 @@ using System.Text;
         /// <param name="userId">The user identifier.</param>
         /// <returns>returns a boolean value</returns>
         Task<bool> ResetPassword(ResetPassword reset, int userId);
+        string ProfilePicture(int userId, ImageUploadRequestModel imageUpload);
     }
 }

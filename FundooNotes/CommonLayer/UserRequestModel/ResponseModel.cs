@@ -86,6 +86,7 @@ using System.Text;
         /// </value>
         public DateTime IsModified { get; set; }
         public string UserRole { get; set; }
+        public string ProfilePicture { get; set; }
     }
 
     /// <summary>

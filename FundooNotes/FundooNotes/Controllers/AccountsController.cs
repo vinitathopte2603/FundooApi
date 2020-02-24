@@ -23,12 +23,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Tokens;
+    using StackExchange.Redis;
+
 
     /// <summary>
     /// controller class
     /// </summary>
-  [Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountsController : ControllerBase
     {
         /// <summary>
@@ -59,6 +62,7 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>return the specified action</returns>
         [HttpPost]
         [Route("registration")]
+        [AllowAnonymous]
         public async Task<IActionResult> Registration(RegistrationRequestModel userDB)
         {
             try
@@ -103,19 +107,23 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>returns user data if successful else returns null</returns>
         [HttpPost]
         [Route("Login")]
+        [AllowAnonymous]
         public IActionResult Login([FromBody]Login login)
         {
             try
             {
                 var result = this._userBL.Login(login);
                 if (result != null)
-                {
+                {   
                     var status = true;
                     var message = "Login successful";
                     var token = this.GenerateJSONWebToken(result, "Login");
                     var data = result;
+                    //ConnectionMultiplexer connection = ConnectionMultiplexer.Connect("localhost");
+                    //IDatabase db = connection.GetDatabase();
+                    //db.StringSet(result.Id.ToString(), token,TimeSpan.FromMinutes(1440));
                     return this.Ok(new { status, message, data, token });
-                }
+                } 
                 else
                 {
                     var status = false;
@@ -136,6 +144,7 @@ using Microsoft.IdentityModel.Tokens;
         /// <returns>returns the specified status</returns>
         [HttpPost]
         [Route("ForgotPassword")]
+        [AllowAnonymous]
         public IActionResult ForgotPassword([FromBody] ForgotPassword forgotPassword)
         {
             try
@@ -147,13 +156,13 @@ using Microsoft.IdentityModel.Tokens;
                     var message = "mail sent to registered email";
                     var token = this.GenerateJSONWebToken(result, "ForgotPassword");
                     MsmqSend.MsmqSendMethod(token,forgotPassword.Email);
-                    return this.Ok(new { status, message, token });
+                    return this.Ok(new { status, message });
                 }
                 else
                 {
                     var status = true;
                     var message = "Email not verified ";
-                    return this.BadRequest(new { status, message });
+                    return this.NotFound(new { status, message });
                 }
             }
             catch (Exception e)
@@ -167,7 +176,7 @@ using Microsoft.IdentityModel.Tokens;
         /// </summary>
         /// <param name="resetPassword">the new password</param>
         /// <returns>returns the specified action</returns>
-        [Authorize]
+        
         [HttpPost]
         [Route("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPassword resetPassword)
@@ -202,6 +211,39 @@ using Microsoft.IdentityModel.Tokens;
             }
         }
 
+        [HttpPut]
+        [Route("profilepicture")]
+        public IActionResult ProfilePicture([FromForm] ImageUploadRequestModel image)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        string imageUrl = this._userBL.ProfilePicture(userId, image);
+                        if (imageUrl != null)
+                        {
+                            status = true;
+                            message = "Image uploaded successfully";
+                            return this.Ok(new { status, message, imageUrl });
+                        }
+                    }
+                }
+                status = false;
+                message = "Image upload failed";
+                return this.BadRequest(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+
         /// <summary>
         /// Token generation
         /// </summary>
@@ -225,7 +267,7 @@ using Microsoft.IdentityModel.Tokens;
                 var token = new JwtSecurityToken(this._config["Jwt:Issuer"],
                     this._config["Jwt:Issuer"],
                      claims,
-            expires: DateTime.Now.AddMinutes(120),
+            expires: DateTime.Now.AddMinutes(1440),
             signingCredentials: credentials);
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
