@@ -690,8 +690,8 @@ using Microsoft.AspNetCore.Mvc;
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
-                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        NoteResponseModel data = this._notesBusiness.Collaborations(noteId, collaborator);
+                        int ownerId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        NoteResponseModel data = this._notesBusiness.Collaborations(noteId, collaborator, ownerId);
                         if (data != null)
                         {
                             status = true;

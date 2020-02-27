@@ -151,6 +151,6 @@ using System.Text;
         /// <param name="noteId">The note identifier.</param>
         /// <param name="collaboratorRequest">The collaborator request.</param>
         /// <returns>the note</returns>
-        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest);
+        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId);
     }
 }

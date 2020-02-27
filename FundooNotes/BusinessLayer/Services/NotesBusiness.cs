@@ -216,11 +216,11 @@ namespace FundooBusinessLayer.Services
             }
         }
 
-        public NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest)
+        public NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId)
         {
             if (noteId != 0 && collaboratorRequest.CollaboratorRequestModels.Count != 0)
             {
-                return this._notesRepository.Collaborations(noteId, collaboratorRequest);
+                return this._notesRepository.Collaborations(noteId, collaboratorRequest,ownerId);
             }
             else
             {

@@ -118,7 +118,7 @@ using System.Threading.Tasks;
         NoteResponseModel ColourRequest(int noteId, ColourRequest colour, int userId);
         List<NoteResponseModel> ReminderList(int userId);
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
-        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest);
+        NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId);
         
     }
 }

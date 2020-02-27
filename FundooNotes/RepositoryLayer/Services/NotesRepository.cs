@@ -239,6 +239,7 @@ using System.Threading.Tasks;
                     }
                 }
                 notes.AddRange(collabNotes);
+                notes.Sort((note1, note2) => note1.IsCreated.CompareTo(note2.IsCreated));
                 if (keyword != null)
                 {
                     List<NoteResponseModel> searchNoteResponses = SearchNote(userId, keyword);
@@ -989,22 +990,29 @@ using System.Threading.Tasks;
                 throw new Exception(e.Message);
             }
         }
-        public NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest)
+        public NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId)
         {
             try
             {
                 var notesModel = _userContext.Notes.FirstOrDefault(linq => linq.NotesID == noteId);
+
                 if (notesModel != null && collaboratorRequest.CollaboratorRequestModels.Count != 0)
                 {
 
                     foreach (CollaboratorRequestModel requestModel in collaboratorRequest.CollaboratorRequestModels)
                     {
                         UserDB user = _userContext.Users.FirstOrDefault(linq => linq.Id == requestModel.UserId);
-                       
+                        var collab = _userContext.collaborations.FirstOrDefault(linq => linq.UserId == requestModel.UserId && linq.NoteId == noteId);
+                        if (collab != null)
+                        {
+                            return null;
+                        }
+                        else
+                        {
                             if (requestModel.UserId != 0 && user != null)
                             {
-                               // if (requestModel.UserId != user.Id)
-                               // {
+                                if (requestModel.UserId != ownerId)
+                                {
                                     var data = new CollaborationModel()
                                     {
                                         NoteId = notesModel.NotesID,
@@ -1012,14 +1020,15 @@ using System.Threading.Tasks;
                                     };
                                     _userContext.collaborations.Add(data);
                                     _userContext.SaveChanges();
-                               // }
-                               // else
-                              //  {
-                              //  continue;
-                              //  }
+                                }
+                                else
+                                {
+                                    return null;
+                                }
                             }
                         }
                     }
+                }
 
                 List<CollaborationResponseModel> collaborationResponses = _userContext.collaborations
                      .Where(note => note.NoteId == noteId)
