@@ -35,7 +35,7 @@ using System.Text;
         /// <value>
         /// The color.
         /// </value>
-        [RegularExpression(@"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",ErrorMessage = "Enter color in correct format")]
+        //[RegularExpression(@"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",ErrorMessage = "Enter color in correct format")]
         
         public string color { get; set; }
     }

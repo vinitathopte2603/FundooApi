@@ -118,7 +118,7 @@ using System.Text;
         /// </summary>
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns list of notes</returns>
-        List<NoteResponseModel> GetNoteByLabelId(int labelId, int userId);
+        List<NoteResponseModel> GetNoteByLabelId(string label, int userId);
 
         /// <summary>
         /// Colors the request.

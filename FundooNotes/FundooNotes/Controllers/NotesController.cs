@@ -547,8 +547,8 @@ using Microsoft.AspNetCore.Mvc;
         /// <param name="labelId">The label identifier.</param>
         /// <returns>returns the result of specified action</returns>
         [HttpGet]
-        [Route("{labelId}/notebylabelid")]
-        public IActionResult GetNoteByLabelId(int labelId)
+        [Route("{label}/notebylabel")]
+        public IActionResult GetNoteByLabelId(string label)
         {
             try
             {
@@ -560,19 +560,19 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetNoteByLabelId(labelId,userId);
-                        if (result != null)
+                        List<NoteResponseModel> data = this._notesBusiness.GetNoteByLabelId(label,userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "note";
-                            return this.Ok(new { status, message, result });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
 
                 status = false;
                 message = "Note not available";
-                return this.NotFound(new { status, message });
+                return this.Ok(new { status, message });
             }
             catch (Exception e)
             {

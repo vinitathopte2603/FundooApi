@@ -172,7 +172,8 @@ using System.Threading.Tasks;
                           IsPin = notetable.IsPin,
                           IsCreated = notetable.IsCreated,
                           IsModified = notetable.IsModified,
-                          Id=notetable.NotesID  
+                          Id=notetable.NotesID,
+                          Color = notetable.Color
                       }
                     ).ToList();
 
@@ -205,7 +206,8 @@ using System.Threading.Tasks;
                     IsPin = linq.IsPin,
                     IsTrash = linq.IsTrash,
                     IsCreated = linq.IsCreated,
-                    IsModified = linq.IsModified
+                    IsModified = linq.IsModified,
+                    Color = linq.Color
                 }).ToList();
                 if (notes.Count != 0 && notes != null)
                 {
@@ -283,7 +285,69 @@ using System.Threading.Tasks;
                     await this._userContext.SaveChangesAsync();
                  
                 }
+                if (notesModel != null && notesModel.labels.Count != 0)
+                {
+                    List<RequestNotesLabels> requestNotesLabels = notesModel.labels;
+                    foreach (RequestNotesLabels request in requestNotesLabels)
+                    {
+                        LabelModel label = _userContext.Labels.FirstOrDefault(linq => linq.UserId == userId && linq.Id == request.Id);
+                        if (request.Id > 0 && label != null)
+                        {
+                            var data = new LabelsNotes()
+                            {
+                                LabelId = request.Id,
+                                NoteId = noteId
 
+                            };
+                            _userContext.labelsNotes.Add(data);
+                            await _userContext.SaveChangesAsync();
+                        }
+                    }
+                }
+                List<LabelResponseModel> labelResponseModels = _userContext.labelsNotes
+                    .Where(note => note.NoteId == noteId)
+                    .Join(_userContext.Labels,
+                    notelabel => notelabel.LabelId,
+                    label => label.Id,
+                    (notelabel, label) => new LabelResponseModel
+                    {
+                        Id = label.Id,
+                        Label = label.Label,
+                        IsCreated = label.IsCreated,
+                        IsModified = label.IsModified
+                    }).ToList();
+                //// Adding collaborator to the note
+                if (notesModel != null && notesModel.Collaborators.Count != 0)
+                {
+                    List<CollaboratorRequestModel> collaboratorRequests = notesModel.Collaborators;
+                    foreach (CollaboratorRequestModel requestModel in collaboratorRequests)
+                    {
+                        UserDB user = _userContext.Users.FirstOrDefault(linq => linq.Id == requestModel.UserId);
+                        if (requestModel.UserId != 0 && user != null)
+                        {
+                            var data = new CollaborationModel()
+                            {
+                                NoteId = notesModel1.NotesID,
+                                UserId = user.Id
+                            };
+                            _userContext.collaborations.Add(data);
+                            await _userContext.SaveChangesAsync();
+                        }
+                    }
+                }
+
+                List<CollaborationResponseModel> collaborationResponses = _userContext.collaborations
+                      .Where(note => note.NoteId == notesModel1.NotesID)
+                      .Join(_userContext.Users,
+                      collab => collab.UserId,
+                      user => user.Id,
+                      (collab, user) => new CollaborationResponseModel
+                      {
+                          UserId = user.Id,
+                          Email = user.Email,
+                          Firstname = user.FirstName,
+                          LastName = user.LastName
+                      }).ToList();
                 NoteResponseModel noteResponse = _userContext.Notes.Where(c => (c.NotesID == noteId) && (c.ID == userId)).Select(c => new NoteResponseModel
                 {
                     Id = c.NotesID,
@@ -295,8 +359,10 @@ using System.Threading.Tasks;
                     IsTrash = c.IsTrash,
                     IsPin = c.IsPin,
                     IsCreated = c.IsCreated,
-                    IsModified = c.IsModified
-                  
+                    IsModified = c.IsModified,
+                    labels = labelResponseModels,
+                    collaborations = collaborationResponses
+
                 }).FirstOrDefault();
                 return noteResponse;
             }
@@ -775,14 +841,14 @@ using System.Threading.Tasks;
                 throw new Exception(e.Message);
             }
         }
-        public List<NoteResponseModel> GetNoteByLabelId(int labelId, int userId)
+        public List<NoteResponseModel> GetNoteByLabelId(string labelstr, int userId)
         {
             try
             {
-                LabelModel labels = _userContext.Labels.FirstOrDefault(linq => linq.Id == labelId && linq.UserId == userId);
+                LabelModel labels = _userContext.Labels.FirstOrDefault(linq => linq.Label == labelstr && linq.UserId == userId);
                 if (labels != null)
                 {
-                    List<NoteResponseModel> noteResponses = _userContext.labelsNotes.Where(linq => linq.LabelId == labelId).
+                    List<NoteResponseModel> noteResponses = _userContext.labelsNotes.Where(linq => linq.LabelId == labels.Id).
                         Join(_userContext.Notes,
                         label => label.NoteId,
                         note => note.NotesID,

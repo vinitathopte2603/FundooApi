@@ -169,11 +169,11 @@ namespace FundooBusinessLayer.Services
                 return null;
             }
         }
-        public List<NoteResponseModel> GetNoteByLabelId(int labelId,int userId)
+        public List<NoteResponseModel> GetNoteByLabelId(string label,int userId)
         {
-            if (labelId != 0)
+            if (!string.IsNullOrWhiteSpace(label))
             {
-                return this._notesRepository.GetNoteByLabelId(labelId, userId);
+                return this._notesRepository.GetNoteByLabelId(label, userId);
             }
             else
             {
