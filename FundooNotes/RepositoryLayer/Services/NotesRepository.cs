@@ -684,7 +684,7 @@ using System.Threading.Tasks;
                 List<NoteResponseModel> notesModels = _userContext.Notes.Where(linq => (linq.ID == userId) && (linq.IsTrash == false) && (linq.IsArchive == false) && (linq.IsPin == true)).Select
                     (linq => new NoteResponseModel
                     {
-                        Id = linq.ID,
+                        Id = linq.NotesID,
                         Title = linq.Title,
                         Description = linq.Description,
                         Reminder = linq.Reminder,
@@ -693,7 +693,8 @@ using System.Threading.Tasks;
                         IsPin = linq.IsPin,
                         IsTrash = linq.IsTrash,
                         IsCreated = linq.IsCreated,
-                        IsModified = linq.IsModified
+                        IsModified = linq.IsModified,
+                        Color=linq.Color
                     }).ToList();
 
                 //// get list of labels

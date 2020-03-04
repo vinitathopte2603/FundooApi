@@ -288,24 +288,26 @@ using Microsoft.AspNetCore.Mvc;
                 var user = HttpContext.User;
                 bool status;
                 string message;
+                List<NoteResponseModel> data = null;
                 if (user.HasClaim(c => c.Type == "TokenType"))
                 {
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> result = this._notesBusiness.GetAllPin(userId);
-                        if (result != null)
+                        data = this._notesBusiness.GetAllPin(userId);
+                        if (data != null)
                         {
                             status = true;
                             message = "pinned notes";
-                            return this.Ok(new { status, message, result });
+                            return this.Ok(new { status, message, data });
                         }
                     }
                 }
 
                 status = false;
                 message = "Note not available";
-                return this.NoContent();
+                data = null;
+                return this.Ok(new { status, message, data });
             }
             catch (Exception e)
             {
@@ -370,20 +372,20 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        bool result = await this._notesBusiness.IsPin(userId, noteId, pin);
-                        if (result == true && pin.value == true)
+                        bool data = await this._notesBusiness.IsPin(userId, noteId, pin);
+                        if (data == true && pin.value == true)
                         {
                             status = true;
                             message = "note pinned";
                             return this.Ok(new { status, message });
                         }
-                        if (result == true && pin.value == false)
+                        if (data == true && pin.value == false)
                         {
                             status = true;
                             message = "note unpinned";
                             return this.Ok(new { status, message });
                         }
-                        if (!result)
+                        if (!data)
                         {
                             status = false;
                             message = "note not found ";
