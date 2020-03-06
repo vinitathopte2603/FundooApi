@@ -119,6 +119,8 @@ using System.Threading.Tasks;
         List<NoteResponseModel> ReminderList(int userId);
         string UploadImage(int userId, int noteId, ImageUploadRequestModel image);
         NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId);
-        
+       List<GetUsersResponseModel> GetAllUsers(string keyword);
+
+
     }
 }

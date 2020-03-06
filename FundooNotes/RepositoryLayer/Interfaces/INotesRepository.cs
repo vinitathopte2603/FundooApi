@@ -152,5 +152,6 @@ using System.Text;
         /// <param name="collaboratorRequest">The collaborator request.</param>
         /// <returns>the note</returns>
         NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId);
+        List<GetUsersResponseModel> GetAllUsers(string keyword);
     }
 }

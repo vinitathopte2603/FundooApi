@@ -6,15 +6,15 @@
 namespace FundooNotes.Controllers
 {
     using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FundooBusinessLayer.Interfaces;
-using FundooCommonLayer.Model;
-using FundooCommonLayer.UserRequestModel;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using FundooBusinessLayer.Interfaces;
+    using FundooCommonLayer.Model;
+    using FundooCommonLayer.UserRequestModel;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using StackExchange.Redis;
 
 
@@ -562,7 +562,7 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                        List<NoteResponseModel> data = this._notesBusiness.GetNoteByLabelId(label,userId);
+                        List<NoteResponseModel> data = this._notesBusiness.GetNoteByLabelId(label, userId);
                         if (data != null)
                         {
                             status = true;
@@ -628,8 +628,8 @@ using Microsoft.AspNetCore.Mvc;
                     if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
                     {
                         int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
-                       List<NoteResponseModel> data =  this._notesBusiness.ReminderList(userId);
-                        if (data.Count!=0)
+                        List<NoteResponseModel> data = this._notesBusiness.ReminderList(userId);
+                        if (data.Count != 0)
                         {
                             status = true;
                             message = "reminder notes";
@@ -649,7 +649,7 @@ using Microsoft.AspNetCore.Mvc;
         }
         [HttpPut]
         [Route("{noteId}/Imageupload")]
-        public IActionResult UploadImage(int noteId,[FromForm] ImageUploadRequestModel image)
+        public IActionResult UploadImage(int noteId, [FromForm] ImageUploadRequestModel image)
         {
             try
             {
@@ -705,6 +705,38 @@ using Microsoft.AspNetCore.Mvc;
                 status = false;
                 message = "collaboration failed";
                 return this.NotFound(new { status, message });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e.Message);
+            }
+        }
+        [HttpGet]
+        [Route("users")]
+        public IActionResult GetAllUsers(string keyword)
+        {
+            try
+            {
+                var user = HttpContext.User;
+                bool status;
+                string message;
+                if (user.HasClaim(c => c.Type == "TokenType"))
+                {
+                    if (user.Claims.FirstOrDefault(c => c.Type == "TokenType").Value == "Login")
+                    {
+                        int userId = Convert.ToInt32(user.Claims.FirstOrDefault(c => c.Type == "Id").Value);
+                        List<GetUsersResponseModel> data = this._notesBusiness.GetAllUsers(keyword);
+                        if (data != null)
+                        {
+                            status = true;
+                            message = "all collaborations";
+                            return this.Ok(new { status, message, data });
+                        }
+                    }
+                }
+                status = false;
+                message = "no collaborations";
+                return this.Ok(new { status, message });
             }
             catch (Exception e)
             {

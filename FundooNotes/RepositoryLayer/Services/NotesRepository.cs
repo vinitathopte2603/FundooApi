@@ -1183,5 +1183,19 @@ using System.Threading.Tasks;
             }
             return searchNoteResponses;
         }
+        public List<GetUsersResponseModel> GetAllUsers(string keyword)
+        {
+            List<GetUsersResponseModel> getUsers = _userContext.Users.Where(linq => linq.UserRole == "User" && linq.Email.Contains(keyword)).Select
+                (linq => new GetUsersResponseModel
+                {
+                    UserId = linq.Id,
+                    FirstName = linq.FirstName,
+                    LastName = linq.LastName,
+                    Email = linq.Email,
+                    Type = linq.Type,
+                    Profile = linq.Profile
+                }).ToList();
+            return getUsers;
+        }
     }
 }

@@ -10,4 +10,3 @@ D:\FundooProject\FundooNotes\Listener\bin\Debug\netcoreapp3.1\Experimental.Syste
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.csproj.CopyComplete
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.dll
 D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.pdb
-D:\FundooProject\FundooNotes\Listener\obj\Debug\netcoreapp3.1\Listener.csprojAssemblyReference.cache

@@ -227,5 +227,17 @@ namespace FundooBusinessLayer.Services
                 return null;
             }
         }
+
+        public List <GetUsersResponseModel> GetAllUsers(string keyword)
+        {
+            if(!string.IsNullOrWhiteSpace(keyword))
+            {
+                return _notesRepository.GetAllUsers(keyword);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
