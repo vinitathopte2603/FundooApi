@@ -239,5 +239,16 @@ namespace FundooBusinessLayer.Services
                 return null;
             }
         }
+        public async Task<bool> RemoveCollaborate(int noteid, int userid)
+        {
+            if (noteid != 0 && userid != 0)
+            {
+                return await _notesRepository.RemoveCollaborate(noteid, userid);
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

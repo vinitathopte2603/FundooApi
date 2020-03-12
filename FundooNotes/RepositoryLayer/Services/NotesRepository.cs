@@ -1197,5 +1197,30 @@ using System.Threading.Tasks;
                 }).ToList();
             return getUsers;
         }
+        public async Task<bool> RemoveCollaborate(int noteId, int userId)
+        {
+            try
+            {
+                var notecollaborate = this._userContext.collaborations.Where(g => g.NoteId == noteId && g.UserId == userId).FirstOrDefault();
+
+                if (notecollaborate != null)
+                {
+                    if (notecollaborate.NoteId == noteId)
+                    {
+                        this._userContext.collaborations.Remove(notecollaborate);
+                        await this._userContext.SaveChangesAsync();
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }

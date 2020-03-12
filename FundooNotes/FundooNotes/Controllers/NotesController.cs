@@ -743,5 +743,33 @@ namespace FundooNotes.Controllers
                 return this.BadRequest(e.Message);
             }
         }
+        [HttpDelete]
+        [Route("{noteId}/removecollab/{userId}")]
+        public IActionResult RemoveCollaborate(int noteId,int userId)
+        {
+            bool status;
+            string message;
+            var user = HttpContext.User;
+            if (user.HasClaim(c => c.Type == "Typetoken"))
+            {
+                if (user.Claims.FirstOrDefault(c => c.Type == "Typetoken").Value == "Login")
+                {
+                    var notesDB = _notesBusiness.RemoveCollaborate(noteId, userId);
+                    if (notesDB != null)
+                    {
+                        status = true;
+                        message = "collaboration remove successful done";
+                        return Ok(new { status, message });
+                    }
+                    else
+                    {
+                        status = false;
+                        message = "unable to remove collaborate with user";
+                        return NotFound(new { status, message });
+                    }
+                }
+            }
+            return BadRequest("used invalid token");
+        }
     }
-}
+    }

@@ -121,6 +121,6 @@ using System.Threading.Tasks;
         NoteResponseModel Collaborations(int noteId, CollaborateMultiple collaboratorRequest, int ownerId);
        List<GetUsersResponseModel> GetAllUsers(string keyword);
 
-
+        Task<bool> RemoveCollaborate(int noteId, int userId);
     }
 }
